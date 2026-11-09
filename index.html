@@ -436,14 +436,14 @@ details summary { cursor: pointer; font-weight: 700; font-size: 14px; padding: 4
   /* --- Firebase Integration --- */
   var DB = null, AUTH = null, canEdit = true, noUsers = false;
   
-  // TODO: Replace with your actual Firebase config
   const firebaseConfig = {
     apiKey: "AIzaSyCywoJx4L3Puo-K2qa4OkQ9RYSjDkcyyCw",
-    authDomain: "environmental-word.firebasestorage.app",
+    authDomain: "environmental-word.firebaseapp.com",
     projectId: "environmental-word",
     storageBucket: "environmental-word.firebasestorage.app",
     messagingSenderId: "285814210070",
-    appId: "1:285814210070:web:d3176ba8abf36f7e1dbf37"
+    appId: "1:285814210070:web:d3176ba8abf36f7e1dbf37",
+    measurementId: "G-JCGE1RSPQZ"
   };
 
   if (window.firebase && !firebase.apps.length) {
@@ -536,9 +536,9 @@ details summary { cursor: pointer; font-weight: 700; font-size: 14px; padding: 4
     const secondaryApp = firebase.initializeApp(firebaseConfig, "Secondary");
     await secondaryApp.auth().createUserWithEmailAndPassword(email, password);
     await secondaryApp.auth().signOut();
-    secondaryApp.delete();
+    await secondaryApp.delete();
 
-    // Save the user role and meta to Firestore
+    // Save the user role and meta to Firestore (Works because main app is logged in as Admin)
     await DB.doc('users/' + username).set({ 
       username: username, 
       role: role, 
@@ -822,18 +822,28 @@ details summary { cursor: pointer; font-weight: 700; font-size: 14px; padding: 4
     var u = cleanName($('suUser').value), p = $('suPass').value;
     showError('suErr', '');
     if (!NAME_OK.test(u)) return showError('suErr', 'Username: 2 to 20 letters, numbers, - or _.');
-    if (p.length < 4) return showError('suErr', 'Password needs at least 4 characters.');
+    if (p.length < 6) return showError('suErr', 'Firebase requires at least 6 characters for a password.');
+    
     try {
-      await createUser(u, p, 'admin');
       const email = u + '@ecowordle.local';
-      await AUTH.signInWithEmailAndPassword(email, p); // Auto sign-in after creation
+      
+      // 對於第一個帳號，直接使用主 Auth 建立，這會自動完成登入
+      await AUTH.createUserWithEmailAndPassword(email, p);
+      
+      // 成功登入後，現在我們有寫入 Firestore 的權限了
+      await DB.doc('users/' + u).set({ 
+        username: u, 
+        role: 'admin', 
+        updatedAt: Date.now() 
+      });
       
       noUsers = false; 
       account = { username: u, role: 'admin' }; 
       store.set('ew_login', u);
       await enterGame();
     } catch (err) { 
-      showError('suErr', 'Could not create the account. Check your database permissions.'); 
+      console.error(err);
+      showError('suErr', 'Error: ' + err.message); 
     }
   });
 
@@ -1044,10 +1054,19 @@ details summary { cursor: pointer; font-weight: 700; font-size: 14px; padding: 4
     addBtn.addEventListener('click', async function () {
       var u = cleanName(nu.value), p = np.value;
       msg.hidden = true; msg.className = 'err';
-      var bad = !NAME_OK.test(u) ? 'Username: 2 to 20 letters, numbers, - or _.' : p.length < 4 ? 'Password needs at least 4 characters.' : users.some(function (x) { return x.username === u; }) ? 'That username is taken.' : '';
+      var bad = !NAME_OK.test(u) ? 'Username: 2 to 20 letters, numbers, - or _.' : p.length < 6 ? 'Firebase requires at least 6 characters.' : users.some(function (x) { return x.username === u; }) ? 'That username is taken.' : '';
       if (bad) { msg.textContent = bad; msg.hidden = false; return; }
       addBtn.disabled = true;
-      try { await createUser(u, p, nr.value); toast('Account ' + u + ' created'); renderAdmin(); } catch (e) { addBtn.disabled = false; saveFail(); }
+      try { 
+        await createUser(u, p, nr.value); 
+        toast('Account ' + u + ' created'); 
+        renderAdmin(); 
+      } catch (e) { 
+        console.error(e);
+        msg.textContent = 'Error: ' + e.message;
+        msg.hidden = false;
+        addBtn.disabled = false; 
+      }
     });
     
     out.appendChild(h('div', { class: 'card' }, [
