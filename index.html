@@ -1,7 +1,7 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Eco Wordle</title>
 <meta name="viewport-fit" content="cover">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Figtree:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Figtree:wght@400;500;700&family=JetBrains+Mono:wght@500;700&display=swap">
 
 <!-- Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -9,36 +9,47 @@
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
 <style>
-/* Layout: one centered column, 5x6 board of leaf-cut tiles, topic strip above, keyboard below. Result card replaces the keyboard when a round ends. */
+/* Layout: Option A Architectural Header Window + Louver Mechanics + Environmental Dashboard Console */
 :root {
-  --bg: #edf2ec;
-  --surface: #f8faf6;
-  --fg: #13251b;
-  --muted: #566a5e;
-  --line: #c5d1c6;
-  --key: #d4ddd3;
-  --accent: #0f6b5c;
-  --hit: #2e7d4f;
-  --near: #e3b341;
-  --miss: #5f7066;
+  --bg: #e6eaee;
+  --surface: #f7f9fb;
+  --surface-2: #edf1f5;
+  --fg: #12171c;
+  --muted: #53616e;
+  --line: #c5ced6;
+  --key: #d8dfe6;
+  --accent: #0d7a72;
+  --hit: #0e8a7d;
+  --near: #d99b26;
+  --miss: #49545e;
   --on-hit: #ffffff;
-  --on-near: #1b1a10;
+  --on-near: #171206;
   --on-miss: #ffffff;
+  --sky-top: #cbd3da;
+  --sky-bot: #eef2f5;
+  --tower-light: #f4f6f8;
+  --tower-mid: #8e99a4;
+  --tower-dark: #252d35;
   --font-display: 'Bricolage Grotesque', system-ui, sans-serif;
   --font-body: 'Figtree', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #0f1a14; --surface: #16241c; --fg: #e4eee6; --muted: #93a89b; --line: #2f4136; --key: #263a2e;
-    --accent: #5cc4a8; --hit: #3fa46a; --near: #e3b341; --miss: #34453b;
-    --on-hit: #07140c; --on-near: #1b1a10; --on-miss: #e4eee6;
+    --bg: #0c1013; --surface: #141a1f; --surface-2: #1b232a; --fg: #e5ecf2; --muted: #8b99a6; --line: #2a353f; --key: #222c35;
+    --accent: #38d9c5; --hit: #24b5a3; --near: #eab338; --miss: #313d47;
+    --on-hit: #051715; --on-near: #181305; --on-miss: #d8e1e8;
+    --sky-top: #151c22; --sky-bot: #222c35;
+    --tower-light: #d7e0e8; --tower-mid: #6e7b87; --tower-dark: #101519;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #0f1a14; --surface: #16241c; --fg: #e4eee6; --muted: #93a89b; --line: #2f4136; --key: #263a2e;
-  --accent: #5cc4a8; --hit: #3fa46a; --near: #e3b341; --miss: #34453b;
-  --on-hit: #07140c; --on-near: #1b1a10; --on-miss: #e4eee6;
+  --bg: #0c1013; --surface: #141a1f; --surface-2: #1b232a; --fg: #e5ecf2; --muted: #8b99a6; --line: #2a353f; --key: #222c35;
+  --accent: #38d9c5; --hit: #24b5a3; --near: #eab338; --miss: #313d47;
+  --on-hit: #051715; --on-near: #181305; --on-miss: #d8e1e8;
+  --sky-top: #151c22; --sky-bot: #222c35;
+  --tower-light: #d7e0e8; --tower-mid: #6e7b87; --tower-dark: #101519;
   color-scheme: dark;
 }
 /* color-blind friendly palette: blue / orange */
@@ -58,91 +69,278 @@ body {
 }
 button { font-family: inherit; color: inherit; }
 button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.app { max-width: 440px; margin: 0 auto; display: grid; gap: 14px; }
+.app { max-width: 460px; margin: 0 auto; display: grid; gap: 12px; }
 
-.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+/* ---- Option A: Architectural Header Window ---- */
+.arch-window {
+  position: relative;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-bot) 100%);
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(15, 23, 30, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  --haze: 1;
+}
+.arch-media {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.arch-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 68% 35%;
+  filter: grayscale(100%) contrast(1.08);
+  opacity: 0.88;
+}
+.arch-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+/* Atmospheric smog haze layer that clears up as player purifies letters */
+.arch-haze {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, var(--surface) 0%, var(--surface) 42%, rgba(160, 172, 182, 0.35) 100%);
+  opacity: calc(0.55 + var(--haze) * 0.32);
+  backdrop-filter: blur(calc(var(--haze) * 1.5px));
+  transition: opacity 0.6s ease, backdrop-filter 0.6s ease;
+}
+.arch-inner {
+  position: relative;
+  z-index: 2;
+  padding: 14px 14px 10px;
+  display: grid;
+  gap: 12px;
+}
+
+.top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
 .brand { min-width: 0; }
-.brand h1 { margin: 0; font: 700 26px/1.1 var(--font-display); letter-spacing: -0.01em; display: flex; align-items: center; gap: 8px; color: var(--fg); }
+.brand h1 {
+  margin: 0; font: 700 25px/1.1 var(--font-display); letter-spacing: -0.02em;
+  display: flex; align-items: center; gap: 8px; color: var(--fg);
+}
 .brand h1 svg { color: var(--accent); flex: none; }
-.brand p { margin: 2px 0 0; font-size: 12px; color: var(--muted); }
-.nav { display: flex; gap: 6px; flex: none; }
-.ghost { border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 6px 11px; font-size: 13px; font-weight: 500; cursor: pointer; }
-.ghost:hover:not(:disabled) { border-color: var(--accent); }
+.brand p { margin: 3px 0 0; font-size: 12px; font-weight: 500; color: var(--muted); }
+.nav { display: flex; gap: 5px; flex: none; flex-wrap: wrap; justify-content: flex-end; }
+.ghost {
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--surface) 86%, transparent);
+  backdrop-filter: blur(6px);
+  border-radius: 7px; padding: 5px 10px; font-size: 12px; font-weight: 600; cursor: pointer;
+  transition: border-color .15s, background .15s, transform .1s;
+}
+.ghost:hover:not(:disabled) { border-color: var(--accent); background: var(--surface); }
+.ghost:active:not(:disabled) { transform: translateY(1px); }
 .ghost:disabled { opacity: .45; cursor: default; }
 
-.clue { display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 9px 12px; min-height: 48px; }
-.chip { flex: none; background: var(--accent); color: var(--bg); font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 2px 10px; border-radius: 999px; }
-#clueText { min-width: 0; font-size: 14px; flex: 1; }
-.modeTag { flex: none; font-size: 11px; color: var(--muted); letter-spacing: .04em; text-transform: uppercase; }
+/* ---- Environmental Dashboard Telemetry Strip ---- */
+.telemetry-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  border: 1px solid var(--line);
+  backdrop-filter: blur(8px);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.03em;
+}
+.tel-station {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.tel-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--near);
+  box-shadow: 0 0 6px var(--near);
+  transition: background .3s, box-shadow .3s;
+}
+.tel-dot.clean { background: var(--hit); box-shadow: 0 0 8px var(--hit); }
+.tel-meter {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+}
+.tel-cell {
+  width: 12px;
+  height: 6px;
+  border-radius: 1.5px;
+  background: var(--line);
+  transition: background .35s ease;
+}
+.tel-cell.used { background: var(--miss); }
+.tel-cell.clean { background: var(--hit); }
+.tel-status {
+  font-weight: 700;
+  color: var(--fg);
+  white-space: nowrap;
+}
 
-.boardWrap { position: relative; }
-#board { display: grid; gap: 6px; width: min(100%, 330px); margin: 0 auto; }
+/* ---- Dashboard Sensor Clue Module ---- */
+.clue {
+  display: flex; align-items: center; gap: 9px;
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: 10px; padding: 8px 12px; min-height: 46px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.25);
+}
+.sensor-led {
+  width: 8px; height: 8px; border-radius: 2px; flex: none;
+  background: var(--line);
+  transition: background .25s, box-shadow .25s;
+}
+.sensor-led.active {
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+}
+.chip {
+  flex: none; background: var(--accent); color: var(--on-hit);
+  font-family: var(--font-mono); font-size: 11px; font-weight: 700;
+  letter-spacing: .06em; text-transform: uppercase; padding: 2px 9px; border-radius: 4px;
+}
+#clueText { min-width: 0; font-size: 13.5px; flex: 1; }
+.modeTag {
+  flex: none; font-family: var(--font-mono); font-size: 10.5px; font-weight: 700;
+  color: var(--muted); background: var(--surface-2); border: 1px solid var(--line);
+  padding: 2px 7px; border-radius: 4px; letter-spacing: .04em; text-transform: uppercase;
+}
+
+/* ---- Louver Board & Tiles ---- */
+.boardWrap {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 14px 12px;
+  box-shadow: 0 2px 10px rgba(15, 23, 30, 0.04);
+}
+#board { display: grid; gap: 6px; width: min(100%, 318px); margin: 0 auto; }
 .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
 .tile {
   aspect-ratio: 1; display: grid; place-items: center;
-  font: 700 clamp(24px, 8vw, 32px)/1 var(--font-display); text-transform: uppercase;
-  background: var(--surface); color: var(--fg); border: 2px solid var(--line);
-  border-radius: 14px 3px 14px 3px; user-select: none;
+  font: 700 clamp(23px, 7.5vw, 30px)/1 var(--font-display); text-transform: uppercase;
+  background-color: var(--surface-2);
+  /* Subtle horizontal louver slat texture on unrevealed tiles */
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 5px,
+    rgba(110, 125, 138, 0.09) 5px,
+    rgba(110, 125, 138, 0.09) 6px
+  );
+  color: var(--fg);
+  border: 1.5px solid var(--line);
+  border-radius: 6px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), 0 1px 2px rgba(0,0,0,0.04);
+  user-select: none;
+  transition: border-color .15s, background-color .2s;
 }
-.tile[data-filled="1"] { border-color: var(--muted); }
-.tile[data-state="hit"] { background: var(--hit); border-color: var(--hit); color: var(--on-hit); }
-.tile[data-state="near"] { background: var(--near); border-color: var(--near); color: var(--on-near); }
-.tile[data-state="miss"] { background: var(--miss); border-color: var(--miss); color: var(--on-miss); }
+.tile[data-filled="1"] {
+  border-color: var(--fg);
+  background-color: var(--surface);
+}
+.tile[data-state="hit"] {
+  background-color: var(--hit); background-image: none;
+  border-color: var(--hit); color: var(--on-hit);
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--hit) 35%, transparent);
+}
+.tile[data-state="near"] {
+  background-color: var(--near); background-image: none;
+  border-color: var(--near); color: var(--on-near);
+}
+.tile[data-state="miss"] {
+  background-color: var(--miss); background-image: none;
+  border-color: var(--miss); color: var(--on-miss);
+}
 .tile.pop { animation: pop .12s ease; }
-.tile.flip { animation: flip .5s ease; }
+.tile.flip { animation: louverFlip .5s cubic-bezier(0.22, 1, 0.36, 1); }
 .row.shake { animation: shake .4s ease; }
-@keyframes pop { 50% { transform: scale(1.08); } }
-@keyframes flip { 50% { transform: rotateX(90deg); } }
+@keyframes pop { 50% { transform: scale(1.07); } }
+@keyframes louverFlip {
+  0% { transform: perspective(420px) rotateX(0deg); }
+  50% { transform: perspective(420px) rotateX(-88deg); filter: brightness(0.82); }
+  100% { transform: perspective(420px) rotateX(0deg); }
+}
 @keyframes shake { 20%, 60% { transform: translateX(-5px); } 40%, 80% { transform: translateX(5px); } }
 
-#msg { position: absolute; left: 50%; top: -6px; transform: translateX(-50%); background: var(--fg); color: var(--bg); padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 500; white-space: nowrap; pointer-events: none; z-index: 2; }
+#msg { position: absolute; left: 50%; top: -6px; transform: translateX(-50%); background: var(--fg); color: var(--bg); padding: 6px 14px; border-radius: 6px; font-family: var(--font-mono); font-size: 12px; font-weight: 700; white-space: nowrap; pointer-events: none; z-index: 2; }
 
+/* ---- Industrial Console Keyboard ---- */
 #kb { display: grid; gap: 6px; }
 .krow { display: flex; gap: 5px; justify-content: center; }
 .krow.mid { padding-inline: 4.5%; }
-.key { flex: 1 1 0; min-width: 0; height: 50px; border: 0; border-radius: 7px; background: var(--key); font: 700 15px var(--font-body); cursor: pointer; padding: 0; text-transform: uppercase; }
-.key.wide { flex: 1.65 1 0; font-size: 12px; }
-.key[data-state="hit"] { background: var(--hit); color: var(--on-hit); }
-.key[data-state="near"] { background: var(--near); color: var(--on-near); }
-.key[data-state="miss"] { background: var(--miss); color: var(--on-miss); opacity: .85; }
+.key {
+  flex: 1 1 0; min-width: 0; height: 48px;
+  border: 1px solid var(--line); border-radius: 6px;
+  background: var(--key);
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.12);
+  font: 700 14px var(--font-body); cursor: pointer; padding: 0; text-transform: uppercase;
+  transition: transform .06s, background-color .15s;
+}
+.key:active { transform: translateY(1px); box-shadow: none; }
+.key.wide { flex: 1.65 1 0; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.03em; }
+.key[data-state="hit"] { background: var(--hit); border-color: var(--hit); color: var(--on-hit); }
+.key[data-state="near"] { background: var(--near); border-color: var(--near); color: var(--on-near); }
+.key[data-state="miss"] { background: var(--miss); border-color: var(--miss); color: var(--on-miss); opacity: .82; }
 
-#result { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px; display: grid; gap: 10px; }
+/* ---- Filtration Report / Result Card ---- */
+#result {
+  background: var(--surface); border: 1px solid var(--line);
+  border-top: 3px solid var(--accent);
+  border-radius: 12px; padding: 18px; display: grid; gap: 10px;
+}
 .res-top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
-.res-label { font-size: 12px; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; }
-.res-word { font: 700 40px/1 var(--font-display); letter-spacing: .05em; color: var(--accent); }
-.res-def { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 17px; font-weight: 700; }
-.res-fact { margin: 0; padding: 10px 12px; background: var(--bg); border-radius: 8px; max-width: 65ch; }
-.res-fact b { display: block; font-size: 12px; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 2px; }
+.res-label { font-family: var(--font-mono); font-size: 11px; font-weight: 700; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; }
+.res-word { font: 700 38px/1 var(--font-display); letter-spacing: .06em; color: var(--accent); }
+.res-def { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 16px; font-weight: 700; }
+.res-fact {
+  margin: 0; padding: 10px 12px; background: var(--surface-2);
+  border-left: 3px solid var(--accent); border-radius: 6px; max-width: 65ch;
+}
+.res-fact b { display: block; font-family: var(--font-mono); font-size: 11px; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 3px; }
 .res-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-.btn { border: 0; border-radius: 9px; padding: 10px 18px; font-size: 14px; font-weight: 700; cursor: pointer; background: var(--accent); color: var(--bg); }
-.btn.alt { background: var(--key); color: var(--fg); }
-#shareBox { width: 100%; min-height: 96px; background: var(--bg); color: var(--fg); border: 1px solid var(--line); border-radius: 8px; padding: 8px; font: 14px/1.5 var(--font-body); resize: none; }
+.btn { border: 0; border-radius: 7px; padding: 10px 18px; font-size: 14px; font-weight: 700; cursor: pointer; background: var(--accent); color: var(--on-hit); }
+.btn.alt { background: var(--key); color: var(--fg); border: 1px solid var(--line); }
+#shareBox { width: 100%; min-height: 96px; background: var(--surface-2); color: var(--fg); border: 1px solid var(--line); border-radius: 6px; padding: 8px; font: 13px/1.5 var(--font-mono); resize: none; }
 
-.overlay { position: fixed; inset: 0; background: rgba(8, 16, 11, .55); display: flex; align-items: flex-end; justify-content: center; z-index: 20; }
+.overlay { position: fixed; inset: 0; background: rgba(10, 14, 18, .62); backdrop-filter: blur(3px); display: flex; align-items: flex-end; justify-content: center; z-index: 20; }
 .sheet { background: var(--surface); width: 100%; max-width: 460px; max-height: 88dvh; overflow-y: auto; border-radius: 16px 16px 0 0; padding: 18px 18px calc(20px + env(safe-area-inset-bottom, 0px)); border: 1px solid var(--line); }
-@media (min-width: 560px) { .overlay { align-items: center; } .sheet { border-radius: 16px; } }
+@media (min-width: 560px) { .overlay { align-items: center; } .sheet { border-radius: 14px; } }
 .sheet-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
 .sheet h2 { margin: 0; font: 700 20px/1.2 var(--font-display); }
-.sheet h3 { margin: 16px 0 6px; font-size: 12px; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; }
+.sheet h3 { margin: 16px 0 6px; font-family: var(--font-mono); font-size: 11px; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; }
 .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; text-align: center; }
-.stats div { background: var(--bg); border-radius: 8px; padding: 8px 2px; }
-.stats strong { display: block; font: 700 22px/1.2 var(--font-display); font-variant-numeric: tabular-nums; }
+.stats div { background: var(--surface-2); border: 1px solid var(--line); border-radius: 8px; padding: 8px 2px; }
+.stats strong { display: block; font: 700 22px/1.2 var(--font-mono); font-variant-numeric: tabular-nums; }
 .stats span { font-size: 11px; color: var(--muted); }
 .dist { display: grid; gap: 4px; }
-.drow { display: grid; grid-template-columns: 14px 1fr; gap: 8px; align-items: center; font-size: 12px; font-variant-numeric: tabular-nums; }
-.dbar { background: var(--accent); color: var(--bg); border-radius: 3px; padding: 0 6px; min-width: 22px; text-align: right; font-weight: 700; }
+.drow { display: grid; grid-template-columns: 14px 1fr; gap: 8px; align-items: center; font-family: var(--font-mono); font-size: 12px; font-variant-numeric: tabular-nums; }
+.dbar { background: var(--accent); color: var(--on-hit); border-radius: 3px; padding: 0 6px; min-width: 22px; text-align: right; font-weight: 700; }
 .learned { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
-.learned li { display: flex; justify-content: space-between; gap: 12px; background: var(--bg); border-radius: 8px; padding: 7px 10px; font-size: 14px; }
-.learned b { font-family: var(--font-display); letter-spacing: .05em; flex: none; }
+.learned li { display: flex; justify-content: space-between; gap: 12px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 6px; padding: 7px 10px; font-size: 14px; }
+.learned b { font-family: var(--font-mono); letter-spacing: .05em; flex: none; }
 .learned span { color: var(--muted); text-align: right; min-width: 0; }
-.learned li.empty { background: none; padding: 0; color: var(--muted); }
+.learned li.empty { background: none; border: 0; padding: 0; color: var(--muted); }
 .setrow { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line); }
 .setrow label { flex: 1; min-width: 0; font-weight: 500; }
 .setrow small { display: block; color: var(--muted); font-size: 12px; font-weight: 400; }
 .setrow input[type="checkbox"] { width: 22px; height: 22px; accent-color: var(--accent); flex: none; }
 .seg { display: flex; gap: 6px; }
-.seg button { border: 1px solid var(--line); background: var(--bg); border-radius: 8px; padding: 6px 12px; font-size: 13px; cursor: pointer; }
-.seg button[aria-pressed="true"] { background: var(--accent); color: var(--bg); border-color: var(--accent); font-weight: 700; }
+.seg button { border: 1px solid var(--line); background: var(--surface-2); border-radius: 6px; padding: 6px 12px; font-size: 13px; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--on-hit); border-color: var(--accent); font-weight: 700; }
 .about { color: var(--muted); font-size: 12px; margin: 14px 0 0; }
 
 @media (prefers-reduced-motion: reduce) {
@@ -153,23 +351,23 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
 #msg { position: fixed; top: calc(12px + env(safe-area-inset-top, 0px)); max-width: calc(100vw - 32px); white-space: normal; text-align: center; z-index: 40; }
 .top { flex-wrap: wrap; }
 .app.wide { max-width: 760px; }
-.boot { max-width: 440px; margin: 40px auto; text-align: center; color: var(--muted); }
-.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px; display: grid; gap: 12px; }
-.card h2 { margin: 0; font: 700 20px/1.2 var(--font-display); }
+.boot { max-width: 440px; margin: 40px auto; text-align: center; font-family: var(--font-mono); color: var(--muted); }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 20px; display: grid; gap: 12px; }
+.card h2 { margin: 0; font: 700 19px/1.2 var(--font-display); }
 .muted { color: var(--muted); font-size: 13px; margin: 0; }
-.err { color: var(--fg); background: var(--bg); border-left: 4px solid var(--near); border-radius: 4px; padding: 8px 10px; font-size: 13px; margin: 0; }
-.okmsg { color: var(--fg); background: var(--bg); border-left: 4px solid var(--hit); border-radius: 4px; padding: 8px 10px; font-size: 13px; margin: 0; }
+.err { color: var(--fg); background: var(--surface-2); border-left: 4px solid var(--near); border-radius: 4px; padding: 8px 10px; font-size: 13px; margin: 0; }
+.okmsg { color: var(--fg); background: var(--surface-2); border-left: 4px solid var(--hit); border-radius: 4px; padding: 8px 10px; font-size: 13px; margin: 0; }
 .field { display: grid; gap: 4px; min-width: 0; }
-.field > span { font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: .04em; text-transform: uppercase; }
+.field > span { font-family: var(--font-mono); font-size: 11px; font-weight: 700; color: var(--muted); letter-spacing: .04em; text-transform: uppercase; }
 input[type="text"], input[type="password"], input[type="date"], select, textarea.in {
-  font: inherit; font-size: 15px; width: 100%; min-width: 0; background: var(--bg); color: var(--fg);
-  border: 1px solid var(--line); border-radius: 8px; padding: 9px 10px;
+  font: inherit; font-size: 15px; width: 100%; min-width: 0; background: var(--surface-2); color: var(--fg);
+  border: 1px solid var(--line); border-radius: 7px; padding: 9px 10px;
 }
 textarea.in { resize: vertical; min-height: 64px; }
 .linkbtn { background: none; border: 0; color: var(--accent); font-weight: 700; font-size: 14px; cursor: pointer; padding: 6px 0; text-align: left; }
 .tabs { display: flex; gap: 6px; flex-wrap: wrap; }
-.tabs button { border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 7px 14px; font-size: 14px; font-weight: 500; cursor: pointer; }
-.tabs button[aria-pressed="true"] { background: var(--accent); color: var(--bg); border-color: var(--accent); font-weight: 700; }
+.tabs button { border: 1px solid var(--line); background: var(--surface); border-radius: 7px; padding: 7px 14px; font-size: 13px; font-weight: 600; cursor: pointer; }
+.tabs button[aria-pressed="true"] { background: var(--accent); color: var(--on-hit); border-color: var(--accent); font-weight: 700; }
 .panel { display: grid; gap: 12px; }
 .srow { display: grid; grid-template-columns: minmax(110px, 150px) 1fr; gap: 10px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--line); }
 .sdate { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
@@ -178,15 +376,15 @@ textarea.in { resize: vertical; min-height: 64px; }
 .tblwrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
 table { border-collapse: collapse; width: 100%; font-size: 14px; }
 th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
-th { font-size: 11px; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }
+th { font-family: var(--font-mono); font-size: 11px; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }
 tr:last-child td { border-bottom: 0; }
-td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
-.pill { display: inline-block; font-size: 12px; font-weight: 700; padding: 1px 9px; border-radius: 999px; background: var(--key); color: var(--fg); white-space: nowrap; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; font-family: var(--font-mono); }
+.pill { display: inline-block; font-family: var(--font-mono); font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; background: var(--key); color: var(--fg); white-space: nowrap; }
 .pill.win { background: var(--hit); color: var(--on-hit); }
 .pill.miss { background: var(--miss); color: var(--on-miss); }
 .pill.mid { background: var(--near); color: var(--on-near); }
 .wlist { display: flex; flex-wrap: wrap; gap: 6px; }
-.wlist span, .wlist button { font-size: 13px; background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 2px 8px; }
+.wlist span, .wlist button { font-size: 13px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 5px; padding: 2px 8px; }
 .inline { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
 .inline input { width: 130px; padding: 5px 8px; font-size: 14px; }
 .small { font-size: 13px; padding: 5px 10px; }
@@ -199,20 +397,66 @@ details summary { cursor: pointer; font-weight: 700; font-size: 14px; padding: 4
 </style>
 </head><body>
 
-<div class="boot" id="boot">Loading Eco Wordle…</div>
+<div class="boot" id="boot">INITIALIZING SMOG-FREE STATION…</div>
 
 <div class="app" id="viewLogin" hidden>
-  <header class="top">
-    <div class="brand">
-      <h1>
-        <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19C5 10 11 4 20 4c0 9-6 15-15 15z" fill="currentColor"/><path d="M5 19 13 11" stroke="var(--bg)" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>
-        Eco Wordle
-      </h1>
-      <p>Sign in to save your results</p>
+  <!-- Option A Architectural Window Header for Login -->
+  <div class="arch-window" style="--haze: 0.75">
+    <div class="arch-media" aria-hidden="true">
+      <svg class="arch-svg" viewBox="0 0 800 240" preserveAspectRatio="xMidYMid slice">
+        <!-- Distant urban high-rise grid buildings (left skyline) -->
+        <g fill="var(--tower-mid)" opacity="0.28">
+          <rect x="28" y="105" width="44" height="95"/><rect x="82" y="96" width="48" height="104"/><rect x="140" y="112" width="42" height="88"/>
+        </g>
+        <!-- Plaza ground horizon -->
+        <line x1="0" y1="200" x2="800" y2="200" stroke="var(--tower-mid)" stroke-width="1.5" opacity="0.4"/>
+        <!-- Smog Free Tower Architectural Silhouette (right-of-center) -->
+        <g transform="translate(530, 14)">
+          <!-- Left & Right Angled Louver Intake Wings -->
+          <polygon points="35,44 -28,28 -14,56 35,64" fill="var(--tower-dark)" opacity="0.85"/>
+          <polygon points="95,32 152,12 138,48 95,58" fill="var(--tower-light)" stroke="var(--tower-dark)" stroke-width="1.5"/>
+          <!-- Main Louvered Tower Body -->
+          <rect x="35" y="32" width="60" height="154" fill="var(--tower-light)" stroke="var(--tower-dark)" stroke-width="1.5"/>
+          <!-- Upper Electrostatic Core Aperture -->
+          <rect x="52" y="42" width="34" height="58" fill="var(--tower-dark)"/>
+          <rect x="58" y="48" width="22" height="46" fill="var(--tower-mid)"/>
+          <!-- Horizontal Louver Slats -->
+          <g stroke="var(--tower-dark)" stroke-width="2.2">
+            <line x1="31" y1="106" x2="99" y2="106"/><line x1="31" y1="113" x2="99" y2="113"/>
+            <line x1="31" y1="120" x2="99" y2="120"/><line x1="31" y1="127" x2="99" y2="127"/>
+            <line x1="31" y1="134" x2="99" y2="134"/><line x1="31" y1="141" x2="99" y2="141"/>
+            <line x1="31" y1="148" x2="99" y2="148"/><line x1="31" y1="155" x2="99" y2="155"/>
+            <line x1="31" y1="162" x2="99" y2="162"/><line x1="31" y1="169" x2="99" y2="169"/>
+            <line x1="31" y1="176" x2="99" y2="176"/><line x1="31" y1="183" x2="99" y2="183"/>
+          </g>
+        </g>
+      </svg>
+      <img src="tower.webp" alt="" class="arch-photo" onerror="this.remove()">
     </div>
-  </header>
+    <div class="arch-haze"></div>
+    <div class="arch-inner">
+      <header class="top">
+        <div class="brand">
+          <h1>
+            <!-- Geometric Louver Tower Icon -->
+            <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M8 5L3 3.5l1.5 3L8 7.5V21h8V7.5l3.5-1.5 1.5-3L16 5H8z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+              <path d="M8 10h8M8 13.5h8M8 17h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+            Eco Wordle
+          </h1>
+          <p>Purify the air, word by word.</p>
+        </div>
+      </header>
+      <div class="telemetry-bar">
+        <span class="tel-station"><span class="tel-dot"></span>STATION // SMOG-FREE-01</span>
+        <span class="tel-status">AUTH REQUIRED</span>
+      </div>
+    </div>
+  </div>
+
   <form class="card" id="loginForm" autocomplete="on">
-    <h2>Sign in</h2>
+    <h2>Operator Sign In</h2>
     <label class="field"><span>Username</span><input type="text" id="liUser" autocomplete="username" autocapitalize="none" spellcheck="false" required></label>
     <label class="field"><span>Password</span><input type="password" id="liPass" autocomplete="current-password" required></label>
     <p class="err" id="liErr" hidden></p>
@@ -232,23 +476,76 @@ details summary { cursor: pointer; font-weight: 700; font-size: 14px; padding: 4
 </div>
 
 <div class="app" id="viewGame" hidden>
-  <header class="top">
-    <div class="brand">
-      <h1>
-        <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19C5 10 11 4 20 4c0 9-6 15-15 15z" fill="currentColor"/><path d="M5 19 13 11" stroke="var(--bg)" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>
-        Eco Wordle
-      </h1>
-      <p id="who">Guess the environmental word in 6 tries</p>
+  <!-- Option A Architectural Window Header -->
+  <div class="arch-window" id="archWindow">
+    <div class="arch-media" aria-hidden="true">
+      <svg class="arch-svg" viewBox="0 0 800 240" preserveAspectRatio="xMidYMid slice">
+        <!-- Distant urban high-rise grid buildings (left skyline) -->
+        <g fill="var(--tower-mid)" opacity="0.26">
+          <rect x="24" y="102" width="42" height="98"/><rect x="76" y="94" width="46" height="106"/><rect x="132" y="110" width="40" height="90"/>
+        </g>
+        <!-- Plaza ground horizon -->
+        <line x1="0" y1="200" x2="800" y2="200" stroke="var(--tower-mid)" stroke-width="1.5" opacity="0.4"/>
+        <!-- Smog Free Tower Architectural Silhouette (right-of-center) -->
+        <g transform="translate(530, 12)">
+          <!-- Left & Right Angled Louver Intake Wings -->
+          <polygon points="35,44 -28,28 -14,56 35,64" fill="var(--tower-dark)" opacity="0.85"/>
+          <polygon points="95,32 152,12 138,48 95,58" fill="var(--tower-light)" stroke="var(--tower-dark)" stroke-width="1.5"/>
+          <!-- Main Louvered Tower Body -->
+          <rect x="35" y="32" width="60" height="156" fill="var(--tower-light)" stroke="var(--tower-dark)" stroke-width="1.5"/>
+          <!-- Upper Electrostatic Core Aperture -->
+          <rect x="52" y="42" width="34" height="58" fill="var(--tower-dark)"/>
+          <rect x="58" y="48" width="22" height="46" fill="var(--tower-mid)"/>
+          <!-- Horizontal Louver Slats -->
+          <g stroke="var(--tower-dark)" stroke-width="2.2">
+            <line x1="31" y1="106" x2="99" y2="106"/><line x1="31" y1="113" x2="99" y2="113"/>
+            <line x1="31" y1="120" x2="99" y2="120"/><line x1="31" y1="127" x2="99" y2="127"/>
+            <line x1="31" y1="134" x2="99" y2="134"/><line x1="31" y1="141" x2="99" y2="141"/>
+            <line x1="31" y1="148" x2="99" y2="148"/><line x1="31" y1="155" x2="99" y2="155"/>
+            <line x1="31" y1="162" x2="99" y2="162"/><line x1="31" y1="169" x2="99" y2="169"/>
+            <line x1="31" y1="176" x2="99" y2="176"/><line x1="31" y1="183" x2="99" y2="183"/>
+          </g>
+        </g>
+      </svg>
+      <img src="tower.webp" alt="" class="arch-photo" onerror="this.remove()">
     </div>
-    <nav class="nav">
-      <button class="ghost" id="btnHint" type="button">Hint</button>
-      <button class="ghost" id="btnLog" type="button">Log</button>
-      <button class="ghost" id="btnManage" type="button" hidden>Manage</button>
-      <button class="ghost" id="btnSet" type="button">Settings</button>
-    </nav>
-  </header>
+    <div class="arch-haze"></div>
+    <div class="arch-inner">
+      <header class="top">
+        <div class="brand">
+          <h1>
+            <!-- Geometric Louver Tower Icon -->
+            <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M8 5L3 3.5l1.5 3L8 7.5V21h8V7.5l3.5-1.5 1.5-3L16 5H8z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+              <path d="M8 10h8M8 13.5h8M8 17h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+            Eco Wordle
+          </h1>
+          <p id="who">Guess the environmental word in 6 tries</p>
+        </div>
+        <nav class="nav">
+          <button class="ghost" id="btnHint" type="button">Hint</button>
+          <button class="ghost" id="btnLog" type="button">Log</button>
+          <button class="ghost" id="btnManage" type="button" hidden>Manage</button>
+          <button class="ghost" id="btnSet" type="button">Settings</button>
+        </nav>
+      </header>
 
+      <!-- Environmental Monitoring Telemetry Bar -->
+      <div class="telemetry-bar" aria-label="Air purification telemetry">
+        <span class="tel-station"><span class="tel-dot" id="airDot"></span>SMOG-TOWER</span>
+        <div class="tel-meter" id="airMeter" aria-hidden="true">
+          <span class="tel-cell"></span><span class="tel-cell"></span><span class="tel-cell"></span>
+          <span class="tel-cell"></span><span class="tel-cell"></span><span class="tel-cell"></span>
+        </div>
+        <span class="tel-status" id="airStatusText">AQI 142 // STANDBY</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sensor Readout Clue Bar -->
   <section class="clue" aria-label="Topic hint">
+    <span class="sensor-led" id="clueLed" aria-hidden="true"></span>
     <span class="chip" id="cat" hidden></span>
     <span id="clueText"></span>
     <span class="modeTag" id="modeTag"></span>
@@ -266,7 +563,7 @@ details summary { cursor: pointer; font-weight: 700; font-size: 14px; padding: 4
       <span class="res-word" id="resWord"></span>
     </div>
     <div class="res-def"><span id="resDef"></span><span class="chip" id="resCat"></span></div>
-    <p class="res-fact"><b>Did you know?</b><span id="resFact"></span></p>
+    <p class="res-fact"><b>Environmental Brief // Did you know?</b><span id="resFact"></span></p>
     <div class="res-actions">
       <button class="btn" id="btnNext" type="button">Play another</button>
       <button class="btn alt" id="btnShare" type="button">Copy result</button>
@@ -621,102 +918,57 @@ details summary { cursor: pointer; font-weight: 700; font-size: 14px; padding: 4
     else { delete t.dataset.state; t.removeAttribute('aria-label'); }
   }
   function renderBoard() {
+    var hitCols = {};
     for (var r = 0; r < 6; r++) {
       var g = game.guesses[r], states = g ? evaluate(g, game.answer) : null;
       for (var c = 0; c < 5; c++) {
         var ch = '';
-        if (g) ch = g[c];
+        if (g) {
+          ch = g[c];
+          if (states[c] === 'hit') hitCols[c] = 1;
+        }
         else if (r === game.guesses.length && game.status === 'play') ch = cur[c] || '';
         setTile(rows[r].tiles[c], ch, states ? states[c] : null);
       }
     }
+    updateTelemetry(Object.keys(hitCols).length);
   }
-  function buildKeys() {
-    var kb = $('kb'); kb.innerHTML = '';
-    ['qwertyuiop', 'asdfghjkl', 'ZzxcvbnmX'].forEach(function (line, i) {
-      var row = document.createElement('div'); row.className = 'krow' + (i === 1 ? ' mid' : '');
-      line.split('').forEach(function (k) {
-        var b = document.createElement('button'); b.type = 'button'; b.className = 'key';
-        if (k === 'Z') { b.textContent = 'Enter'; b.classList.add('wide'); b.dataset.k = 'enter'; b.setAttribute('aria-label', 'Enter'); }
-        else if (k === 'X') { b.textContent = 'Del'; b.classList.add('wide'); b.dataset.k = 'back'; b.setAttribute('aria-label', 'Delete'); }
-        else { b.textContent = k; b.dataset.k = k; keys[k] = b; }
-        b.addEventListener('click', function (e) { e.currentTarget.blur(); press(b.dataset.k); });
-        row.appendChild(b);
-      });
-      kb.appendChild(row);
-    });
+  function updateTelemetry(hitCount) {
+    var winEl = $('archWindow');
+    if (winEl) {
+      var haze = game.status === 'won' ? 0 : Math.max(0.15, 1 - hitCount * 0.17);
+      winEl.style.setProperty('--haze', haze.toFixed(2));
+    }
+    var dot = $('airDot'), st = $('airStatusText'), meter = $('airMeter');
+    if (dot) dot.classList.toggle('clean', game.status === 'won' || hitCount >= 3);
+    if (st) {
+      if (game.status === 'won') st.textContent = 'AQI 12 // PURIFIED';
+      else if (game.status === 'lost') st.textContent = 'AQI 165 // SATURATED';
+      else if (game.guesses.length > 0) st.textContent = 'FILTER // ' + game.guesses.length + '/6';
+      else st.textContent = 'AQI 142 // STANDBY';
+    }
+    if (meter) {
+      var cells = meter.children;
+      for (var i = 0; i < cells.length; i++) {
+        cells[i].className = 'tel-cell' + (game.status === 'won' ? ' clean' : (i < game.guesses.length ? ' used' : ''));
+      }
+    }
   }
-  function updateKeys() {
-    var best = {}, rank = { miss: 1, near: 2, hit: 3 };
-    game.guesses.forEach(function (g) {
-      var st = evaluate(g, game.answer);
-      for (var i = 0; i < 5; i++) if (!best[g[i]] || rank[st[i]] > rank[best[g[i]]]) best[g[i]] = st[i];
-    });
-    Object.keys(keys).forEach(function (k) {
-      var u = k.toUpperCase();
-      if (best[u]) keys[k].dataset.state = best[u]; else delete keys[k].dataset.state;
-    });
-  }
-
-  function renderWho() {
-    $('who').textContent = account ? 'Signed in as ' + account.username + (account.role === 'admin' ? ' (teacher)' : '')
-      : (DB ? 'Guest. Results stay on this device.' : 'Guess the environmental word in 6 tries');
-    $('btnManage').hidden = !(account && account.role === 'admin');
-  }
+// ... existing code ... -->
   function renderClue() {
     var e = byWord[game.answer];
     var over = game.status !== 'play';
     var showTopic = over || game.hint || settings.topic;
     var chip = $('cat');
+    var led = $('clueLed');
+    if (led) led.classList.toggle('active', showTopic);
     chip.hidden = !showTopic; chip.textContent = e.c;
-    $('clueText').textContent = over ? 'Topic of this word' : (showTopic ? 'Topic hint: the word is about this.' : 'Stuck? Tap Hint to reveal the topic.');
+    $('clueText').textContent = over ? 'Topic of this word' : (showTopic ? 'Topic sensor active: word belongs to this sector.' : 'Stuck? Tap Hint to scan topic sector.');
     $('btnHint').disabled = showTopic;
     var d = new Date();
-    $('modeTag').textContent = game.mode === 'daily' ? 'Daily ' + (d.getMonth() + 1) + '/' + d.getDate() : 'Practice';
+    $('modeTag').textContent = game.mode === 'daily' ? 'DAILY · ' + (d.getMonth() + 1) + '/' + d.getDate() : 'PRACTICE';
   }
-  function renderEnd() {
-    var over = game.status !== 'play';
-    $('kb').hidden = over;
-    $('result').hidden = !over;
-    $('shareBox').hidden = true;
-    if (!over) return;
-    var e = byWord[game.answer];
-    $('resLabel').textContent = game.status === 'won' ? 'Solved in ' + game.guesses.length + (game.guesses.length === 1 ? ' try' : ' tries') : 'Not this time. The word was';
-    $('resWord').textContent = game.answer;
-    $('resDef').textContent = e.d || '';
-    $('resCat').textContent = e.c;
-    $('resFact').textContent = e.f || '';
-  }
-  function renderAll() { renderWho(); renderBoard(); updateKeys(); renderClue(); renderEnd(); }
-
-  function shake() {
-    var el = rows[game.guesses.length].el;
-    el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake');
-  }
-  function press(k) {
-    if (!game || game.status !== 'play' || busy) return;
-    if (k === 'enter') return submit();
-    if (k === 'back') {
-      if (cur.length) { cur = cur.slice(0, -1); setTile(rows[game.guesses.length].tiles[cur.length], '', null); }
-      return;
-    }
-    if (/^[a-z]$/.test(k) && cur.length < 5) {
-      var t = rows[game.guesses.length].tiles[cur.length];
-      cur += k.toUpperCase();
-      setTile(t, k.toUpperCase(), null);
-      void t.offsetWidth; t.classList.add('pop');
-    }
-  }
-  function reveal(rowIdx, states, done) {
-    var tiles = rows[rowIdx].tiles;
-    tiles.forEach(function (t, i) {
-      setTimeout(function () {
-        t.classList.add('flip');
-        setTimeout(function () { t.dataset.state = states[i]; t.setAttribute('aria-label', t.textContent + ', ' + STATE_LABEL[states[i]]); }, reduced ? 0 : 240);
-      }, reduced ? 0 : i * 280);
-    });
-    setTimeout(done, reduced ? 0 : 4 * 280 + 540);
-  }
+// ... existing code ... -->
   function submit() {
     if (cur.length < 5) { shake(); toast('Not enough letters'); return; }
     if (!DICT[cur.toLowerCase()]) { shake(); toast('Not in word list'); return; }
@@ -728,481 +980,10 @@ details summary { cursor: pointer; font-weight: 700; font-size: 14px; padding: 4
     saveGame();
     reveal(row, states, function () {
       busy = false;
+      renderBoard();
       updateKeys();
       if (game.status === 'won') toast(['Genius!', 'Magnificent!', 'Impressive', 'Splendid', 'Great', 'Phew!'][game.guesses.length - 1]);
       renderClue(); renderEnd();
     });
   }
-  function recordResult() {
-    stats.played++;
-    if (game.status === 'won') {
-      stats.wins++; stats.streak++; if (stats.streak > stats.max) stats.max = stats.streak;
-      stats.dist[game.guesses.length - 1]++;
-    } else { stats.streak = 0; }
-    if (learned.indexOf(game.answer) < 0) learned.push(game.answer);
-    persistProgress();
-  }
-  async function startGame(mode) {
-    settings.mode = mode; store.set('ew_set', settings);
-    if (DB && mode === 'daily') { try { await loadSchedule(); } catch (e) {} }
-    game = await loadGame(mode); cur = ''; busy = false;
-    renderAll();
-  }
-  function shareText() {
-    var cb = settings.cb, map = { hit: cb ? '🟦' : '🟩', near: cb ? '🟧' : '🟨', miss: '⬛' };
-    var d = new Date(), head = 'Eco Wordle ' + (game.mode === 'daily' ? (d.getMonth() + 1) + '/' + d.getDate() : 'practice') +
-      ' ' + (game.status === 'won' ? game.guesses.length : 'X') + '/6' + (game.hint || settings.topic ? ' 💡' : '');
-    var grid = game.guesses.map(function (g) { return evaluate(g, game.answer).map(function (s) { return map[s]; }).join(''); }).join('\n');
-    return head + '\n' + grid;
-  }
-
-  /* ---------- sign in / out ---------- */
-  function showError(id, msg) { var e = $(id); e.textContent = msg; e.hidden = !msg; }
-  
-  async function enterGame() {
-    showView('viewGame');
-    await loadProgress();
-    game = await loadGame(settings.mode);
-    cur = ''; busy = false;
-    renderAll();
-  }
-
-  function showLogin() {
-    showError('liErr', ''); showError('suErr', '');
-    $('liPass').value = '';
-    $('setupForm').hidden = !noUsers;
-    $('loginForm').hidden = false;
-    if (noUsers) {
-      $('setupFields').hidden = !canEdit;
-      $('setupInfo').textContent = canEdit ? 'There are no accounts yet. Create the teacher account first, then add students from the dashboard.' : 'There are no accounts yet. Ask the teacher to open this page and create the first account.';
-    }
-    showView('viewLogin');
-  }
-
-  // General login
-  $('loginForm').addEventListener('submit', async function (e) {
-    e.preventDefault();
-    var u = cleanName($('liUser').value), p = $('liPass').value;
-    showError('liErr', '');
-    $('liGo').disabled = true;
-    try {
-      if (!NAME_OK.test(u)) throw new Error('bad_format');
-      const email = u + '@ecowordle.local';
-      
-      // Firebase Auth Login
-      await AUTH.signInWithEmailAndPassword(email, p);
-      
-      // Verify role in Firestore
-      var s = await DB.doc('users/' + u).get();
-      if (s.exists) {
-        var d = s.data();
-        account = { username: u, role: d.role === 'admin' ? 'admin' : 'student' };
-        store.set('ew_login', u);
-        await enterGame();
-      } else {
-        throw new Error('missing_data');
-      }
-    } catch (err) {
-      showError('liErr', 'Wrong username or password.');
-    }
-    $('liGo').disabled = false;
-  });
-
-  // Guest Mode
-  $('liGuest').addEventListener('click', async function () { 
-    account = null; 
-    store.set('ew_login', 'guest'); 
-    if (AUTH && AUTH.currentUser) await AUTH.signOut(); // Ensure Firebase is logged out
-    await enterGame(); 
-  });
-
-  // Admin Account Setup
-  $('setupForm').addEventListener('submit', async function (e) {
-    e.preventDefault();
-    var u = cleanName($('suUser').value), p = $('suPass').value;
-    showError('suErr', '');
-    if (!NAME_OK.test(u)) return showError('suErr', 'Username: 2 to 20 letters, numbers, - or _.');
-    if (p.length < 6) return showError('suErr', 'Firebase requires at least 6 characters for a password.');
-    
-    try {
-      const email = u + '@ecowordle.local';
-      
-      // 對於第一個帳號，直接使用主 Auth 建立，這會自動完成登入
-      await AUTH.createUserWithEmailAndPassword(email, p);
-      
-      // 成功登入後，現在我們有寫入 Firestore 的權限了
-      await DB.doc('users/' + u).set({ 
-        username: u, 
-        role: 'admin', 
-        updatedAt: Date.now() 
-      });
-      
-      noUsers = false; 
-      account = { username: u, role: 'admin' }; 
-      store.set('ew_login', u);
-      await enterGame();
-    } catch (err) { 
-      console.error(err);
-      showError('suErr', 'Error: ' + err.message); 
-    }
-  });
-
-  function logout() {
-    account = null; 
-    store.set('ew_login', null); 
-    if (AUTH) AUTH.signOut();
-    closeSheet();
-    showLogin();
-  }
-
-  /* ---------- panels ---------- */
-  var openPanel = null;
-  function openSheet(which) {
-    openPanel = which;
-    $('pLog').hidden = which !== 'log'; $('pSet').hidden = which !== 'set';
-    $('sheetTitle').textContent = which === 'log' ? (account ? 'Learning log: ' + account.username : 'My learning log') : 'Settings';
-    if (which === 'log') renderLog(); else renderSettings();
-    $('ov').hidden = false;
-    $('btnClose').focus();
-  }
-  function closeSheet() { $('ov').hidden = true; openPanel = null; }
-  function renderLog() {
-    $('stPlayed').textContent = stats.played;
-    $('stWin').textContent = stats.played ? Math.round(stats.wins / stats.played * 100) : 0;
-    $('stStreak').textContent = stats.streak; $('stMax').textContent = stats.max;
-    var top = Math.max.apply(null, stats.dist.concat([1])), d = $('dist'); d.innerHTML = '';
-    stats.dist.forEach(function (n, i) {
-      var r = document.createElement('div'); r.className = 'drow';
-      var l = document.createElement('span'); l.textContent = i + 1;
-      var b = document.createElement('div'); b.className = 'dbar'; b.textContent = n; b.style.width = Math.max(8, n / top * 100) + '%';
-      r.appendChild(l); r.appendChild(b); d.appendChild(r);
-    });
-    $('learnTitle').textContent = 'My word book (' + learned.length + ' / ' + WORDS.length + ')';
-    var ul = $('learned'); ul.innerHTML = '';
-    if (!learned.length) ul.appendChild(h('li', { class: 'empty', text: 'Finish a round and the word, its definition and its topic are saved here.' }));
-    learned.slice().sort().forEach(function (w) {
-      var e = byWord[w]; if (!e) return;
-      ul.appendChild(h('li', null, [h('b', { text: w }), h('span', { text: e.d || e.c })]));
-    });
-  }
-  function renderSettings() {
-    $('modeDaily').setAttribute('aria-pressed', settings.mode === 'daily');
-    $('modePractice').setAttribute('aria-pressed', settings.mode === 'practice');
-    $('setTopic').checked = !!settings.topic; $('setCb').checked = !!settings.cb;
-    $('acctRow').hidden = !DB;
-    $('acctText').textContent = account ? 'Signed in as ' + account.username : 'Playing as a guest. Sign in to save results for your teacher.';
-    $('btnAcct').textContent = account ? 'Log out' : 'Sign in';
-    $('about').textContent = WORDS.length + ' environmental words across energy, climate, ocean, pollution, ecology, water, farming, land and recycling. Every answer comes with a short definition and a fact. Guesses are checked against a built-in list of about 12,600 five-letter English words.';
-  }
-  function applySettings() { document.documentElement.setAttribute('data-cb', settings.cb ? '1' : '0'); }
-
-  /* ---------- teacher dashboard ---------- */
-  var adm = { tab: 'schedule', date: null, users: null };
-  function showAdmin() {
-    showView('viewAdmin');
-    $('admWho').textContent = 'Signed in as ' + account.username;
-    $('admNote').hidden = canEdit;
-    adm.date = adm.date || dateKey();
-    renderAdmin();
-  }
-  function renderAdmin() {
-    ['schedule', 'results', 'words', 'students'].forEach(function (t) { $('tab-' + t).setAttribute('aria-pressed', adm.tab === t); });
-    var body = $('admBody'); body.innerHTML = '';
-    if (adm.tab === 'schedule') renderSchedule(body);
-    else if (adm.tab === 'results') renderResults(body);
-    else if (adm.tab === 'words') renderWordBank(body);
-    else renderAccounts(body);
-  }
-  async function getUsers(force) {
-    if (adm.users && !force) return adm.users;
-    var snap = await DB.collection('users').get();
-    adm.users = snap.docs.map(function (d) { var x = d.data(); return { username: d.id, role: x.role === 'admin' ? 'admin' : 'student' }; }).sort(function (a, b) { return a.username < b.username ? -1 : 1; });
-    return adm.users;
-  }
-  function saveFail() { toast('Could not save. Check your database permissions.'); }
-
-  function renderSchedule(body) {
-    var today = dateKey();
-    body.appendChild(h('p', { class: 'muted', text: 'Choose the daily word for each date. “Auto” uses the built-in rotation. Changing today’s word does not affect students who already started.' }));
-    for (var i = 0; i < 14; i++) (function (key, i) {
-      var sel = h('select', { 'aria-label': 'Word for ' + fmtDate(key) });
-      sel.appendChild(h('option', { value: '', text: 'Auto (' + defaultWord(key) + ')' }));
-      WORDS.forEach(function (e) { sel.appendChild(h('option', { value: e.w, text: e.w + '  ·  ' + e.c })); });
-      sel.value = (schedule[key] && byWord[schedule[key]]) ? schedule[key] : '';
-      sel.addEventListener('change', async function () {
-        var prev = schedule[key] || '', v = sel.value;
-        try {
-          if (v) { await DB.doc('schedule/' + key).set({ word: v, by: account.username, updatedAt: Date.now() }); schedule[key] = v; }
-          else { await DB.doc('schedule/' + key).delete(); delete schedule[key]; }
-          toast(v ? fmtDate(key) + ': ' + v : fmtDate(key) + ': auto');
-        } catch (e) { sel.value = prev; saveFail(); }
-      });
-      body.appendChild(h('div', { class: 'srow' }, [
-        h('div', { class: 'sdate' }, [h('b', { text: fmtDate(key) }), i === 0 ? h('span', { class: 'chip', text: 'Today' }) : null]), sel
-      ]));
-    })(addDays(today, i), i);
-  }
-
-  async function renderResults(body) {
-    var key = adm.date;
-    var dateIn = h('input', { type: 'date', id: 'resDate', value: key, 'aria-label': 'Date' });
-    dateIn.addEventListener('change', function () { if (/^\d{4}-\d{2}-\d{2}$/.test(dateIn.value)) { adm.date = dateIn.value; renderAdmin(); } });
-    body.appendChild(h('div', { class: 'inline' }, [h('label', { class: 'field', style: 'max-width:200px' }, [h('span', { text: 'Date' }), dateIn]), h('button', { class: 'ghost', type: 'button', text: 'Refresh', onclick: function () { renderAdmin(); } })]));
-    var out = h('div', { class: 'panel' }, [h('p', { class: 'muted', text: 'Loading…' })]);
-    body.appendChild(out);
-    var users, entries = {};
-    try {
-      users = await getUsers(true);
-      var snap = await DB.collection('results/' + key + '/entries').get();
-      snap.docs.forEach(function (d) { entries[d.id] = d.data(); });
-    } catch (e) { out.textContent = 'Could not load results.'; return; }
-    if (adm.tab !== 'results' || adm.date !== key) return;
-    out.innerHTML = '';
-    var ans = wordForDate(key), a = byWord[ans];
-    out.appendChild(h('div', { class: 'card' }, [
-      h('span', { class: 'res-label', text: 'Daily answer for ' + fmtDate(key) }),
-      h('div', { class: 'inline' }, [h('span', { class: 'res-word', text: ans }), h('span', { class: 'chip', text: a.c })]),
-      h('div', { text: a.d || '' }),
-      schedule[key] ? null : h('p', { class: 'muted', text: 'Chosen automatically. You can set it on the Daily words tab.' })
-    ]));
-    var names = users.filter(function (u) { return u.role === 'student'; }).map(function (u) { return u.username; });
-    Object.keys(entries).forEach(function (n) { if (names.indexOf(n) < 0) names.push(n); });
-    var played = 0, solved = 0, tries = 0, trs = [];
-    names.forEach(function (n) {
-      var e = entries[n], pill, cnt = '', hint = '', gs = '';
-      if (!e) pill = h('span', { class: 'pill', text: 'Not played' });
-      else {
-        played++;
-        var g = e.guesses || [];
-        if (e.status === 'won') { solved++; tries += g.length; pill = h('span', { class: 'pill win', text: 'Solved' }); }
-        else if (e.status === 'lost') pill = h('span', { class: 'pill miss', text: 'Missed' });
-        else pill = h('span', { class: 'pill mid', text: 'In progress' });
-        cnt = String(g.length); hint = e.hint ? 'Yes' : ''; gs = g.join(' › ');
-        if (e.answer && e.answer !== ans) gs += '  (word: ' + e.answer + ')';
-      }
-      trs.push(h('tr', null, [h('td', { text: n }), h('td', null, [pill]), h('td', { class: 'num', text: cnt }), h('td', { text: hint }), h('td', { text: gs })]));
-    });
-    out.appendChild(h('p', { class: 'muted', text: names.length ? played + ' of ' + names.length + ' played · ' + solved + ' solved' + (solved ? ' · average ' + (tries / solved).toFixed(1) + ' tries' : '') : 'No student accounts yet.' }));
-    if (names.length) out.appendChild(h('div', { class: 'tblwrap' }, [h('table', null, [
-      h('thead', null, [h('tr', null, [h('th', { text: 'Student' }), h('th', { text: 'Result' }), h('th', { class: 'num', text: 'Tries' }), h('th', { text: 'Hint' }), h('th', { text: 'Guesses' })])]),
-      h('tbody', null, trs)])]));
-  }
-
-  function renderWordBank(body) {
-    var cats = {}; WORDS.forEach(function (e) { cats[e.c] = 1; });
-    var fw = h('input', { type: 'text', id: 'nwWord', maxlength: '5', autocapitalize: 'characters', spellcheck: 'false' });
-    var fc = h('input', { type: 'text', id: 'nwCat', maxlength: '24', list: 'catList' });
-    var dl = h('datalist', { id: 'catList' }, Object.keys(cats).sort().map(function (c) { return h('option', { value: c }); }));
-    var fd = h('input', { type: 'text', id: 'nwDef', maxlength: '120' });
-    var ff = h('textarea', { class: 'in', id: 'nwFact', maxlength: '300' });
-    var msg = h('p', { class: 'err', hidden: true });
-    var add = h('button', { class: 'btn', type: 'button', text: 'Add word' });
-    add.addEventListener('click', async function () {
-      var w = fw.value.trim().toUpperCase(), c = fc.value.trim(), d = fd.value.trim(), f = ff.value.trim();
-      msg.hidden = true; msg.className = 'err';
-      var bad = !/^[A-Z]{5}$/.test(w) ? 'The word must be exactly 5 letters (A to Z).' : byWord[w] ? w + ' is already in the word bank.' : !c ? 'Add a topic, such as Energy or Ocean.' : '';
-      if (bad) { msg.textContent = bad; msg.hidden = false; return; }
-      add.disabled = true;
-      try {
-        await DB.doc('words/' + w).set({ w: w, c: c, d: d, f: f, by: account.username, updatedAt: Date.now() });
-        custom[w] = { w: w, c: c, d: d, f: f }; rebuildWords(); renderAdmin(); toast(w + ' added');
-      } catch (e) { add.disabled = false; saveFail(); }
-    });
-    body.appendChild(h('div', { class: 'card' }, [
-      h('h2', { text: 'Add a word' }),
-      h('div', { class: 'formgrid' }, [
-        h('label', { class: 'field' }, [h('span', { text: 'Word (5 letters)' }), fw]),
-        h('label', { class: 'field' }, [h('span', { text: 'Topic' }), fc, dl]),
-        h('label', { class: 'field full' }, [h('span', { text: 'Definition' }), fd]),
-        h('label', { class: 'field full' }, [h('span', { text: 'Did you know? (optional)' }), ff])
-      ]), msg, add
-    ]));
-    var cw = Object.keys(custom).sort();
-    var list = h('div', { class: 'card' }, [h('h2', { text: 'Your words (' + cw.length + ')' })]);
-    if (!cw.length) list.appendChild(h('p', { class: 'muted', text: 'No custom words yet. They can be picked on the Daily words tab and appear in practice mode.' }));
-    cw.forEach(function (w) {
-      var e = custom[w], del = h('button', { class: 'ghost small', type: 'button', text: 'Delete' });
-      del.addEventListener('click', async function () {
-        if (del.dataset.arm !== '1') { del.dataset.arm = '1'; del.textContent = 'Sure?'; del.classList.add('danger'); return; }
-        try { await DB.doc('words/' + w).delete(); delete custom[w]; rebuildWords(); renderAdmin(); toast(w + ' deleted'); } catch (err) { saveFail(); }
-      });
-      list.appendChild(h('div', { class: 'inline', style: 'justify-content:space-between' }, [h('div', null, [h('b', { text: w + ' ' }), h('span', { class: 'muted', text: e.c + (e.d ? ' · ' + e.d : '') })]), del]));
-    });
-    body.appendChild(list);
-    var det = h('details', { class: 'card' }, [h('summary', { text: 'Built-in words (' + NB + ')' }),
-      h('div', { class: 'wlist' }, BUILTIN.map(function (e) { return h('span', { text: e.w + ' · ' + e.c }); }))]);
-    body.appendChild(det);
-  }
-
-  async function renderAccounts(body) {
-    var out = h('div', { class: 'panel' }, [h('p', { class: 'muted', text: 'Loading…' })]);
-    body.appendChild(out);
-    var users, prog = {};
-    try {
-      users = await getUsers(true);
-      var snap = await DB.collection('progress').get();
-      snap.docs.forEach(function (d) { prog[d.id] = d.data().stats || {}; });
-    } catch (e) { out.textContent = 'Could not load accounts.'; return; }
-    if (adm.tab !== 'students') return;
-    out.innerHTML = '';
-    var nu = h('input', { type: 'text', id: 'nuName', maxlength: '20', autocapitalize: 'none', spellcheck: 'false' });
-    var np = h('input', { type: 'text', id: 'nuPass', maxlength: '40', autocomplete: 'off' });
-    var nr = h('select', { id: 'nuRole' }, [h('option', { value: 'student', text: 'Student' }), h('option', { value: 'admin', text: 'Teacher' })]);
-    var msg = h('p', { class: 'err', hidden: true });
-    var addBtn = h('button', { class: 'btn', type: 'button', text: 'Add account' });
-    
-    addBtn.addEventListener('click', async function () {
-      var u = cleanName(nu.value), p = np.value;
-      msg.hidden = true; msg.className = 'err';
-      var bad = !NAME_OK.test(u) ? 'Username: 2 to 20 letters, numbers, - or _.' : p.length < 6 ? 'Firebase requires at least 6 characters.' : users.some(function (x) { return x.username === u; }) ? 'That username is taken.' : '';
-      if (bad) { msg.textContent = bad; msg.hidden = false; return; }
-      addBtn.disabled = true;
-      try { 
-        await createUser(u, p, nr.value); 
-        toast('Account ' + u + ' created'); 
-        renderAdmin(); 
-      } catch (e) { 
-        console.error(e);
-        msg.textContent = 'Error: ' + e.message;
-        msg.hidden = false;
-        addBtn.disabled = false; 
-      }
-    });
-    
-    out.appendChild(h('div', { class: 'card' }, [
-      h('h2', { text: 'Add an account' }),
-      h('div', { class: 'formgrid' }, [
-        h('label', { class: 'field' }, [h('span', { text: 'Username' }), nu]),
-        h('label', { class: 'field' }, [h('span', { text: 'Password' }), np]),
-        h('label', { class: 'field' }, [h('span', { text: 'Role' }), nr])
-      ]), msg, addBtn
-    ]));
-    
-    var trs = users.map(function (u) {
-      var s = prog[u.username] || {};
-      
-      // Note: Changing passwords directly via the web client SDK without logging into that user is restricted in Firebase Auth.
-      // This button is kept for UI consistency but requires a Cloud Function (Firebase Admin SDK) to work effectively in a real deployment.
-      var set = h('button', { class: 'ghost small', type: 'button', text: 'Reset', title: 'Requires Firebase Cloud Functions to change another user\'s password' });
-      set.addEventListener('click', function () {
-        toast('Password resets require a Firebase Admin SDK backend/Cloud Function.');
-      });
-      
-      var del = h('button', { class: 'ghost small', type: 'button', text: 'Delete' });
-      if (account && u.username === account.username) del.disabled = true;
-      del.addEventListener('click', async function () {
-        if (del.dataset.arm !== '1') { del.dataset.arm = '1'; del.textContent = 'Sure?'; del.classList.add('danger'); return; }
-        try { 
-          await DB.doc('users/' + u.username).delete(); 
-          // Note: Similar to passwords, deleting the Auth profile from client SDK requires a Cloud Function.
-          // This will only delete the Firestore profile.
-          toast(u.username + ' profile deleted'); 
-          renderAdmin(); 
-        } catch (e) { saveFail(); }
-      });
-      
-      return h('tr', null, [h('td', { text: u.username }), h('td', { text: u.role === 'admin' ? 'Teacher' : 'Student' }),
-        h('td', { class: 'num', text: String(s.played || 0) }), h('td', { class: 'num', text: String(s.wins || 0) }),
-        h('td', null, [h('div', { class: 'inline' }, [set, del])])]);
-    });
-    
-    out.appendChild(h('div', { class: 'tblwrap' }, [h('table', null, [
-      h('thead', null, [h('tr', null, [h('th', { text: 'Username' }), h('th', { text: 'Role' }), h('th', { class: 'num', text: 'Played' }), h('th', { class: 'num', text: 'Wins' }), h('th', { text: 'Manage' })])]),
-      h('tbody', null, trs)])]));
-    out.appendChild(h('p', { class: 'muted', text: 'True account deletion and password resets for other users require setting up a Firebase Cloud Function (Admin SDK) for security reasons.' }));
-  }
-
-  /* ---------- wiring ---------- */
-  buildBoard(); buildKeys(); applySettings();
-  $('btnHint').addEventListener('click', function () { if (!game || game.status !== 'play') return; game.hint = true; saveGame(); renderClue(); });
-  $('btnLog').addEventListener('click', function () { openSheet('log'); });
-  $('btnSet').addEventListener('click', function () { openSheet('set'); });
-  $('btnManage').addEventListener('click', function () { showAdmin(); });
-  $('btnBack').addEventListener('click', async function () { await enterGame(); });
-  $('btnClose').addEventListener('click', closeSheet);
-  $('btnAcct').addEventListener('click', function () { if (account) logout(); else { closeSheet(); showLogin(); } });
-  $('ov').addEventListener('click', function (e) { if (e.target === $('ov')) closeSheet(); });
-  $('modeDaily').addEventListener('click', async function () { if (settings.mode !== 'daily') { await startGame('daily'); renderSettings(); } });
-  $('modePractice').addEventListener('click', async function () { if (settings.mode !== 'practice') { await startGame('practice'); renderSettings(); } });
-  $('setTopic').addEventListener('change', function (e) { settings.topic = e.target.checked; store.set('ew_set', settings); renderClue(); });
-  $('setCb').addEventListener('change', function (e) { settings.cb = e.target.checked; store.set('ew_set', settings); applySettings(); });
-  $('btnNext').addEventListener('click', function () { store.set(practiceKey(), null); startGame('practice'); });
-  $('btnShare').addEventListener('click', function () {
-    var text = shareText();
-    var fallback = function () { var box = $('shareBox'); box.value = text; box.hidden = false; box.focus(); box.select(); toast('Copy the text below'); };
-    try {
-      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(function () { toast('Result copied'); }, fallback);
-      else fallback();
-    } catch (e) { fallback(); }
-  });
-  Array.prototype.forEach.call(document.querySelectorAll('[data-tab]'), function (b) {
-    b.addEventListener('click', function () { adm.tab = b.getAttribute('data-tab'); renderAdmin(); });
-  });
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && openPanel) { closeSheet(); return; }
-    if ($('viewGame').hidden || openPanel || e.ctrlKey || e.metaKey || e.altKey) return;
-    var t = e.target && e.target.tagName;
-    if (t === 'TEXTAREA' || t === 'INPUT' || t === 'SELECT') return;
-    if (e.key === 'Enter') { if (game && game.status === 'play') { e.preventDefault(); press('enter'); } }
-    else if (e.key === 'Backspace') { if (game && game.status === 'play') { e.preventDefault(); press('back'); } }
-    else if (/^[a-zA-Z]$/.test(e.key)) press(e.key.toLowerCase());
-  });
-
-  /* ---------- start ---------- */
-  function getAuthState() {
-    return new Promise((resolve) => {
-      const unsubscribe = AUTH.onAuthStateChanged(user => {
-        unsubscribe();
-        resolve(user);
-      });
-    });
-  }
-
-  async function boot() {
-    if (DB) {
-      try {
-        await loadCustomWords(); 
-        await loadSchedule();
-        var snap = await DB.collection('users').limit(1).get();
-        noUsers = snap.empty;
-      } catch (e) {
-        console.warn("Could not connect to Firestore, falling back to local mode", e);
-        DB = null; 
-      }
-    }
-    
-    // If DB is offline, fall back to purely local mode as a guest
-    if (!DB) { account = null; await enterGame(); return; }
-
-    var saved = store.get('ew_login', null);
-    
-    // Explicit guest mode flag check
-    if (saved === 'guest') {
-      account = null;
-      await enterGame();
-      return;
-    }
-
-    // Check Firebase Auth Session if not a guest
-    const user = await getAuthState();
-    if (user && saved && !noUsers) {
-      var username = user.email.split('@')[0];
-      try {
-        var s = await DB.doc('users/' + username).get();
-        if (s.exists) {
-          account = { username: username, role: s.data().role === 'admin' ? 'admin' : 'student' };
-          await enterGame();
-          return;
-        }
-      } catch (e) {}
-    }
-    
-    showLogin();
-  }
-  
-  boot();
-})();
-
-</script>
-
-</body></html>
+// ... existing code ... -->
