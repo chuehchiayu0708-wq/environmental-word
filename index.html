@@ -1,9 +1,12 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Eco Wordle</title>
-<meta name="viewport-fit" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Figtree:wght@400;500;700&family=JetBrains+Mono:wght@500;700&display=swap">
 
-<!-- Firebase SDKs -->
+<!-- Firebase SDKs (Compat v10.8.0 for single-file HTML execution) -->
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
@@ -11,6 +14,10 @@
 <style>
 /* Layout: Option A Architectural Header Window + Louver Mechanics + Environmental Dashboard Console */
 :root {
+  color-scheme: light;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
   --bg: #e6eaee;
   --surface: #f7f9fb;
   --surface-2: #edf1f5;
@@ -34,6 +41,7 @@
   --font-body: 'Figtree', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 }
+html { scroll-padding-top: env(safe-area-inset-top, 0px); }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #0c1013; --surface: #141a1f; --surface-2: #1b232a; --fg: #e5ecf2; --muted: #8b99a6; --line: #2a353f; --key: #222c35;
@@ -60,7 +68,10 @@
 :root[data-theme="dark"][data-cb="1"] { --hit: #5aa6ea; --near: #f0924a; --on-hit: #06121f; --on-near: #1b1006; }
 
 * { box-sizing: border-box; }
+[hidden]:not([hidden="until-found" i]) { display: none !important; }
+img { max-width: 100%; }
 body {
+  margin: 0;
   background: var(--bg); color: var(--fg);
   font-family: var(--font-body); font-size: 15px; line-height: 1.55;
   padding-left: max(16px, env(safe-area-inset-left, 0px));
@@ -68,7 +79,7 @@ body {
   padding-block: 12px 24px;
 }
 button { font-family: inherit; color: inherit; }
-button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .app { max-width: 460px; margin: 0 auto; display: grid; gap: 12px; }
 
 /* ---- Option A: Architectural Header Window ---- */
@@ -121,7 +132,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
   gap: 12px;
 }
 
-.top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
 .brand { min-width: 0; }
 .brand h1 {
   margin: 0; font: 700 25px/1.1 var(--font-display); letter-spacing: -0.02em;
@@ -276,7 +287,24 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
 }
 @keyframes shake { 20%, 60% { transform: translateX(-5px); } 40%, 80% { transform: translateX(5px); } }
 
-#msg { position: absolute; left: 50%; top: -6px; transform: translateX(-50%); background: var(--fg); color: var(--bg); padding: 6px 14px; border-radius: 6px; font-family: var(--font-mono); font-size: 12px; font-weight: 700; white-space: nowrap; pointer-events: none; z-index: 2; }
+#msg {
+  position: fixed;
+  left: 50%;
+  top: calc(12px + env(safe-area-inset-top, 0px));
+  transform: translateX(-50%);
+  background: var(--fg);
+  color: var(--bg);
+  padding: 7px 14px;
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  max-width: calc(100vw - 32px);
+  white-space: normal;
+  text-align: center;
+  pointer-events: none;
+  z-index: 40;
+}
 
 /* ---- Industrial Console Keyboard ---- */
 #kb { display: grid; gap: 6px; }
@@ -313,6 +341,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
 .res-fact b { display: block; font-family: var(--font-mono); font-size: 11px; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 3px; }
 .res-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 .btn { border: 0; border-radius: 7px; padding: 10px 18px; font-size: 14px; font-weight: 700; cursor: pointer; background: var(--accent); color: var(--on-hit); }
+.btn:disabled { opacity: 0.55; cursor: default; }
 .btn.alt { background: var(--key); color: var(--fg); border: 1px solid var(--line); }
 #shareBox { width: 100%; min-height: 96px; background: var(--surface-2); color: var(--fg); border: 1px solid var(--line); border-radius: 6px; padding: 8px; font: 13px/1.5 var(--font-mono); resize: none; }
 
@@ -348,8 +377,6 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
 }
 
 /* ---- accounts and teacher dashboard ---- */
-#msg { position: fixed; top: calc(12px + env(safe-area-inset-top, 0px)); max-width: calc(100vw - 32px); white-space: normal; text-align: center; z-index: 40; }
-.top { flex-wrap: wrap; }
 .app.wide { max-width: 760px; }
 .boot { max-width: 440px; margin: 40px auto; text-align: center; font-family: var(--font-mono); color: var(--muted); }
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 20px; display: grid; gap: 12px; }
@@ -365,6 +392,7 @@ input[type="text"], input[type="password"], input[type="date"], select, textarea
 }
 textarea.in { resize: vertical; min-height: 64px; }
 .linkbtn { background: none; border: 0; color: var(--accent); font-weight: 700; font-size: 14px; cursor: pointer; padding: 6px 0; text-align: left; }
+.login-links { display: flex; flex-direction: column; gap: 4px; margin-top: 2px; }
 .tabs { display: flex; gap: 6px; flex-wrap: wrap; }
 .tabs button { border: 1px solid var(--line); background: var(--surface); border-radius: 7px; padding: 7px 14px; font-size: 13px; font-weight: 600; cursor: pointer; }
 .tabs button[aria-pressed="true"] { background: var(--accent); color: var(--on-hit); border-color: var(--accent); font-weight: 700; }
@@ -395,7 +423,8 @@ details summary { cursor: pointer; font-weight: 700; font-size: 14px; padding: 4
   .srow { grid-template-columns: 1fr; gap: 4px; }
 }
 </style>
-</head><body>
+</head>
+<body>
 
 <div class="boot" id="boot">INITIALIZING SMOG-FREE STATION…</div>
 
@@ -412,15 +441,11 @@ details summary { cursor: pointer; font-weight: 700; font-size: 14px; padding: 4
         <line x1="0" y1="200" x2="800" y2="200" stroke="var(--tower-mid)" stroke-width="1.5" opacity="0.4"/>
         <!-- Smog Free Tower Architectural Silhouette (right-of-center) -->
         <g transform="translate(530, 14)">
-          <!-- Left & Right Angled Louver Intake Wings -->
           <polygon points="35,44 -28,28 -14,56 35,64" fill="var(--tower-dark)" opacity="0.85"/>
           <polygon points="95,32 152,12 138,48 95,58" fill="var(--tower-light)" stroke="var(--tower-dark)" stroke-width="1.5"/>
-          <!-- Main Louvered Tower Body -->
           <rect x="35" y="32" width="60" height="154" fill="var(--tower-light)" stroke="var(--tower-dark)" stroke-width="1.5"/>
-          <!-- Upper Electrostatic Core Aperture -->
           <rect x="52" y="42" width="34" height="58" fill="var(--tower-dark)"/>
           <rect x="58" y="48" width="22" height="46" fill="var(--tower-mid)"/>
-          <!-- Horizontal Louver Slats -->
           <g stroke="var(--tower-dark)" stroke-width="2.2">
             <line x1="31" y1="106" x2="99" y2="106"/><line x1="31" y1="113" x2="99" y2="113"/>
             <line x1="31" y1="120" x2="99" y2="120"/><line x1="31" y1="127" x2="99" y2="127"/>
@@ -461,16 +486,20 @@ details summary { cursor: pointer; font-weight: 700; font-size: 14px; padding: 4
     <label class="field"><span>Password</span><input type="password" id="liPass" autocomplete="current-password" required></label>
     <p class="err" id="liErr" hidden></p>
     <button class="btn" type="submit" id="liGo">Sign in</button>
-    <button class="linkbtn" type="button" id="liGuest">Play as guest (results stay on this device)</button>
+    <div class="login-links">
+      <button class="linkbtn" type="button" id="liGuest">Play as guest (results stay on this device)</button>
+      <button class="linkbtn" type="button" id="liToggleSetup" style="font-size: 13px; color: var(--muted);">First time? Create teacher account</button>
+    </div>
   </form>
+
   <form class="card" id="setupForm" hidden>
     <h2>Create the teacher account</h2>
-    <p class="muted" id="setupInfo">There are no accounts yet.</p>
+    <p class="muted" id="setupInfo">Set up the primary admin account (password requires at least 6 characters).</p>
     <div id="setupFields" class="panel">
       <label class="field"><span>Teacher username</span><input type="text" id="suUser" autocapitalize="none" spellcheck="false" value="teacher"></label>
-      <label class="field"><span>Password</span><input type="password" id="suPass" autocomplete="new-password"></label>
+      <label class="field"><span>Password (min 6 chars)</span><input type="password" id="suPass" autocomplete="new-password"></label>
       <p class="err" id="suErr" hidden></p>
-      <button class="btn" type="submit">Create account</button>
+      <button class="btn" type="submit" id="suGo">Create account</button>
     </div>
   </form>
 </div>
@@ -488,15 +517,11 @@ details summary { cursor: pointer; font-weight: 700; font-size: 14px; padding: 4
         <line x1="0" y1="200" x2="800" y2="200" stroke="var(--tower-mid)" stroke-width="1.5" opacity="0.4"/>
         <!-- Smog Free Tower Architectural Silhouette (right-of-center) -->
         <g transform="translate(530, 12)">
-          <!-- Left & Right Angled Louver Intake Wings -->
           <polygon points="35,44 -28,28 -14,56 35,64" fill="var(--tower-dark)" opacity="0.85"/>
           <polygon points="95,32 152,12 138,48 95,58" fill="var(--tower-light)" stroke="var(--tower-dark)" stroke-width="1.5"/>
-          <!-- Main Louvered Tower Body -->
           <rect x="35" y="32" width="60" height="156" fill="var(--tower-light)" stroke="var(--tower-dark)" stroke-width="1.5"/>
-          <!-- Upper Electrostatic Core Aperture -->
           <rect x="52" y="42" width="34" height="58" fill="var(--tower-dark)"/>
           <rect x="58" y="48" width="22" height="46" fill="var(--tower-mid)"/>
-          <!-- Horizontal Louver Slats -->
           <g stroke="var(--tower-dark)" stroke-width="2.2">
             <line x1="31" y1="106" x2="99" y2="106"/><line x1="31" y1="113" x2="99" y2="113"/>
             <line x1="31" y1="120" x2="99" y2="120"/><line x1="31" y1="127" x2="99" y2="127"/>
@@ -582,7 +607,7 @@ details summary { cursor: pointer; font-weight: 700; font-size: 14px; padding: 4
     </div>
     <nav class="nav"><button class="ghost" id="btnBack" type="button">Back to game</button></nav>
   </header>
-  <p class="err" id="admNote" hidden>You only have view access. Ensure your database rules are correctly configured to save changes.</p>
+  <p class="err" id="admNote" hidden>Database connection unavailable or restricted. Check Firestore Database setup in Firebase Console.</p>
   <div class="tabs" role="tablist">
     <button type="button" id="tab-schedule" data-tab="schedule" aria-pressed="true">Daily words</button>
     <button type="button" id="tab-results" data-tab="results" aria-pressed="false">Daily answers</button>
@@ -727,13 +752,19 @@ details summary { cursor: pointer; font-weight: 700; font-size: 14px; padding: 4
     (kids || []).forEach(function (c) { if (c != null) e.appendChild(typeof c === 'string' ? document.createTextNode(c) : c); });
     return e;
   }
+  function withTimeout(promise, ms) {
+    return new Promise(function (resolve, reject) {
+      var timer = setTimeout(function () { reject(new Error('timeout')); }, ms);
+      promise.then(function (val) { clearTimeout(timer); resolve(val); }, function (err) { clearTimeout(timer); reject(err); });
+    });
+  }
   var reduced = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
   var STATE_LABEL = { hit: 'correct spot', near: 'in the word, wrong spot', miss: 'not in the word' };
 
   /* --- Firebase Integration --- */
   var DB = null, AUTH = null, canEdit = true, noUsers = false;
-  
-  const firebaseConfig = {
+
+  var firebaseConfig = {
     apiKey: "AIzaSyCywoJx4L3Puo-K2qa4OkQ9RYSjDkcyyCw",
     authDomain: "environmental-word.firebaseapp.com",
     projectId: "environmental-word",
@@ -743,10 +774,14 @@ details summary { cursor: pointer; font-weight: 700; font-size: 14px; padding: 4
     measurementId: "G-JCGE1RSPQZ"
   };
 
-  if (window.firebase && !firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-    DB = firebase.firestore();
-    AUTH = firebase.auth();
+  try {
+    if (window.firebase && !firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+      DB = firebase.firestore();
+      AUTH = firebase.auth();
+    }
+  } catch (e) {
+    console.warn('Firebase init error:', e);
   }
 
   var account = null;                 /* { username, role } or null for guests / offline */
@@ -781,12 +816,12 @@ details summary { cursor: pointer; font-weight: 700; font-size: 14px; padding: 4
   /* ---------- toasts ---------- */
   function toast(t) {
     var m = $('msg'); m.textContent = t; m.hidden = false;
-    clearTimeout(toastTimer); toastTimer = setTimeout(function () { m.hidden = true; }, 2200);
+    clearTimeout(toastTimer); toastTimer = setTimeout(function () { m.hidden = true; }, 2400);
   }
 
   /* ---------- cloud helpers ---------- */
   function enqueue(fn) {
-    chain = chain.then(fn).catch(function () { toast('Could not save to the class record. Your game is still kept on this device.'); });
+    chain = chain.then(fn).catch(function () { toast('Could not sync to cloud. Progress kept locally.'); });
     return chain;
   }
   function defaultStats() { return { played: 0, wins: 0, streak: 0, max: 0, dist: [0, 0, 0, 0, 0, 0] }; }
@@ -794,7 +829,7 @@ details summary { cursor: pointer; font-weight: 700; font-size: 14px; padding: 4
     stats = defaultStats(); learned = [];
     if (account && DB) {
       try {
-        var s = await DB.doc('progress/' + account.username).get();
+        var s = await withTimeout(DB.doc('progress/' + account.username).get(), 3000);
         if (s.exists) { var d = clone(s.data()); stats = Object.assign(defaultStats(), d.stats || {}); learned = d.learned || []; }
       } catch (e) {}
     } else {
@@ -808,7 +843,7 @@ details summary { cursor: pointer; font-weight: 700; font-size: 14px; padding: 4
     } else { store.set('ew_stats', stats); store.set('ew_learned', learned); }
   }
   async function loadCustomWords() {
-    var snap = await DB.collection('words').get();
+    var snap = await withTimeout(DB.collection('words').get(), 3000);
     custom = {};
     snap.docs.forEach(function (d) {
       var x = d.data(), w = String(x.w || d.id).toUpperCase();
@@ -817,7 +852,7 @@ details summary { cursor: pointer; font-weight: 700; font-size: 14px; padding: 4
     rebuildWords();
   }
   async function loadSchedule() {
-    var snap = await DB.collection('schedule').get();
+    var snap = await withTimeout(DB.collection('schedule').get(), 3000);
     schedule = {};
     snap.docs.forEach(function (d) { var x = d.data(); if (x && x.word) schedule[d.id] = String(x.word).toUpperCase(); });
   }
@@ -825,22 +860,28 @@ details summary { cursor: pointer; font-weight: 700; font-size: 14px; padding: 4
   /* ---------- User Creation (Firebase Auth via Virtual Email) ---------- */
   function cleanName(u) { return String(u || '').trim().toLowerCase(); }
   var NAME_OK = /^[a-z0-9_-]{2,20}$/;
-  
-  async function createUser(username, password, role) {
-    const email = username + '@ecowordle.local'; // Virtual domain for Firebase Auth formatting
-    
-    // Create a temporary secondary app instance to register without logging out the current admin
-    const secondaryApp = firebase.initializeApp(firebaseConfig, "Secondary");
-    await secondaryApp.auth().createUserWithEmailAndPassword(email, password);
-    await secondaryApp.auth().signOut();
-    await secondaryApp.delete();
 
-    // Save the user role and meta to Firestore (Works because main app is logged in as Admin)
-    await DB.doc('users/' + username).set({ 
-      username: username, 
-      role: role, 
-      updatedAt: Date.now() 
-    });
+  async function createUser(username, password, role, isFirstAdmin) {
+    var email = username + '@ecowordle.local';
+    if (isFirstAdmin) {
+      await AUTH.createUserWithEmailAndPassword(email, password);
+    } else {
+      var secName = 'Secondary_' + Date.now();
+      var secondaryApp = firebase.initializeApp(firebaseConfig, secName);
+      try {
+        await secondaryApp.auth().createUserWithEmailAndPassword(email, password);
+        await secondaryApp.auth().signOut();
+      } finally {
+        await secondaryApp.delete();
+      }
+    }
+    if (DB) {
+      await withTimeout(DB.doc('users/' + username).set({
+        username: username,
+        role: role,
+        updatedAt: Date.now()
+      }), 4000);
+    }
   }
 
   /* ---------- views ---------- */
@@ -859,7 +900,7 @@ details summary { cursor: pointer; font-weight: 700; font-size: 14px; padding: 4
     if (mode === 'daily') {
       if (account && DB) {
         try {
-          var s = await DB.doc('results/' + today + '/entries/' + account.username).get();
+          var s = await withTimeout(DB.doc('results/' + today + '/entries/' + account.username).get(), 3000);
           if (s.exists) {
             var d = s.data();
             if (byWord[d.answer]) return { mode: 'daily', answer: d.answer, guesses: (d.guesses || []).slice(), status: d.status || 'play', hint: !!d.hint, date: today };
@@ -954,7 +995,38 @@ details summary { cursor: pointer; font-weight: 700; font-size: 14px; padding: 4
       }
     }
   }
-// ... existing code ... -->
+  function buildKeys() {
+    var kb = $('kb'); kb.innerHTML = '';
+    ['qwertyuiop', 'asdfghjkl', 'ZzxcvbnmX'].forEach(function (line, i) {
+      var row = document.createElement('div'); row.className = 'krow' + (i === 1 ? ' mid' : '');
+      line.split('').forEach(function (k) {
+        var b = document.createElement('button'); b.type = 'button'; b.className = 'key';
+        if (k === 'Z') { b.textContent = 'Enter'; b.classList.add('wide'); b.dataset.k = 'enter'; b.setAttribute('aria-label', 'Enter'); }
+        else if (k === 'X') { b.textContent = 'Del'; b.classList.add('wide'); b.dataset.k = 'back'; b.setAttribute('aria-label', 'Delete'); }
+        else { b.textContent = k; b.dataset.k = k; keys[k] = b; }
+        b.addEventListener('click', function (e) { e.currentTarget.blur(); press(b.dataset.k); });
+        row.appendChild(b);
+      });
+      kb.appendChild(row);
+    });
+  }
+  function updateKeys() {
+    var best = {}, rank = { miss: 1, near: 2, hit: 3 };
+    game.guesses.forEach(function (g) {
+      var st = evaluate(g, game.answer);
+      for (var i = 0; i < 5; i++) if (!best[g[i]] || rank[st[i]] > rank[best[g[i]]]) best[g[i]] = st[i];
+    });
+    Object.keys(keys).forEach(function (k) {
+      var u = k.toUpperCase();
+      if (best[u]) keys[k].dataset.state = best[u]; else delete keys[k].dataset.state;
+    });
+  }
+
+  function renderWho() {
+    $('who').textContent = account ? 'Operator: ' + account.username + (account.role === 'admin' ? ' (Teacher)' : '')
+      : 'Guest mode // Local device storage';
+    $('btnManage').hidden = !(account && account.role === 'admin');
+  }
   function renderClue() {
     var e = byWord[game.answer];
     var over = game.status !== 'play';
@@ -968,7 +1040,49 @@ details summary { cursor: pointer; font-weight: 700; font-size: 14px; padding: 4
     var d = new Date();
     $('modeTag').textContent = game.mode === 'daily' ? 'DAILY · ' + (d.getMonth() + 1) + '/' + d.getDate() : 'PRACTICE';
   }
-// ... existing code ... -->
+  function renderEnd() {
+    var over = game.status !== 'play';
+    $('kb').hidden = over;
+    $('result').hidden = !over;
+    $('shareBox').hidden = true;
+    if (!over) return;
+    var e = byWord[game.answer];
+    $('resLabel').textContent = game.status === 'won' ? 'Purified in ' + game.guesses.length + (game.guesses.length === 1 ? ' cycle' : ' cycles') : 'Filter saturated. Target word was';
+    $('resWord').textContent = game.answer;
+    $('resDef').textContent = e.d || '';
+    $('resCat').textContent = e.c;
+    $('resFact').textContent = e.f || '';
+  }
+  function renderAll() { renderWho(); renderBoard(); updateKeys(); renderClue(); renderEnd(); }
+
+  function shake() {
+    var el = rows[game.guesses.length].el;
+    el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake');
+  }
+  function press(k) {
+    if (!game || game.status !== 'play' || busy) return;
+    if (k === 'enter') return submit();
+    if (k === 'back') {
+      if (cur.length) { cur = cur.slice(0, -1); setTile(rows[game.guesses.length].tiles[cur.length], '', null); }
+      return;
+    }
+    if (/^[a-z]$/.test(k) && cur.length < 5) {
+      var t = rows[game.guesses.length].tiles[cur.length];
+      cur += k.toUpperCase();
+      setTile(t, k.toUpperCase(), null);
+      void t.offsetWidth; t.classList.add('pop');
+    }
+  }
+  function reveal(rowIdx, states, done) {
+    var tiles = rows[rowIdx].tiles;
+    tiles.forEach(function (t, i) {
+      setTimeout(function () {
+        t.classList.add('flip');
+        setTimeout(function () { t.dataset.state = states[i]; t.setAttribute('aria-label', t.textContent + ', ' + STATE_LABEL[states[i]]); }, reduced ? 0 : 240);
+      }, reduced ? 0 : i * 280);
+    });
+    setTimeout(done, reduced ? 0 : 4 * 280 + 540);
+  }
   function submit() {
     if (cur.length < 5) { shake(); toast('Not enough letters'); return; }
     if (!DICT[cur.toLowerCase()]) { shake(); toast('Not in word list'); return; }
@@ -986,4 +1100,440 @@ details summary { cursor: pointer; font-weight: 700; font-size: 14px; padding: 4
       renderClue(); renderEnd();
     });
   }
-// ... existing code ... -->
+  function recordResult() {
+    stats.played++;
+    if (game.status === 'won') {
+      stats.wins++; stats.streak++; if (stats.streak > stats.max) stats.max = stats.streak;
+      stats.dist[game.guesses.length - 1]++;
+    } else { stats.streak = 0; }
+    if (learned.indexOf(game.answer) < 0) learned.push(game.answer);
+    persistProgress();
+  }
+  async function startGame(mode) {
+    settings.mode = mode; store.set('ew_set', settings);
+    if (DB && mode === 'daily') { try { await loadSchedule(); } catch (e) {} }
+    game = await loadGame(mode); cur = ''; busy = false;
+    renderAll();
+  }
+  function shareText() {
+    var cb = settings.cb, map = { hit: cb ? '🟦' : '🟩', near: cb ? '🟧' : '🟨', miss: '⬛' };
+    var d = new Date(), head = 'Eco Wordle ' + (game.mode === 'daily' ? (d.getMonth() + 1) + '/' + d.getDate() : 'practice') +
+      ' ' + (game.status === 'won' ? game.guesses.length : 'X') + '/6' + (game.hint || settings.topic ? ' 💡' : '');
+    var grid = game.guesses.map(function (g) { return evaluate(g, game.answer).map(function (s) { return map[s]; }).join(''); }).join('\n');
+    return head + '\n' + grid;
+  }
+
+  /* ---------- sign in / out ---------- */
+  function showError(id, msg) { var e = $(id); e.textContent = msg; e.hidden = !msg; }
+  async function enterGame() {
+    showView('viewGame');
+    await loadProgress();
+    game = await loadGame(settings.mode);
+    cur = ''; busy = false;
+    renderAll();
+  }
+  function showLogin() {
+    showError('liErr', ''); showError('suErr', '');
+    $('liPass').value = '';
+    $('loginForm').hidden = false;
+    $('setupForm').hidden = !noUsers;
+    showView('viewLogin');
+  }
+  $('liToggleSetup').addEventListener('click', function () {
+    $('setupForm').hidden = !$('setupForm').hidden;
+  });
+  $('loginForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    if (!AUTH) return showError('liErr', 'Firebase Auth is not initialized.');
+    var u = cleanName($('liUser').value), p = $('liPass').value;
+    showError('liErr', '');
+    $('liGo').disabled = true;
+    try {
+      if (!NAME_OK.test(u)) throw new Error('Invalid username format.');
+      var email = u + '@ecowordle.local';
+      await AUTH.signInWithEmailAndPassword(email, p);
+
+      var role = (u === 'teacher') ? 'admin' : 'student';
+      if (DB) {
+        try {
+          var s = await withTimeout(DB.doc('users/' + u).get(), 3000);
+          if (s.exists) {
+            role = s.data().role === 'admin' ? 'admin' : 'student';
+          } else {
+            await withTimeout(DB.doc('users/' + u).set({ username: u, role: role, updatedAt: Date.now() }), 3000);
+          }
+        } catch (dbErr) {
+          console.warn('Firestore profile lookup skipped:', dbErr);
+        }
+      }
+      account = { username: u, role: role };
+      store.set('ew_login', u);
+      await enterGame();
+    } catch (err) {
+      console.error(err);
+      if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
+        showError('liErr', 'Incorrect username or password.');
+      } else {
+        showError('liErr', err.message || 'Sign in failed.');
+      }
+    }
+    $('liGo').disabled = false;
+  });
+  $('liGuest').addEventListener('click', async function () {
+    account = null;
+    store.set('ew_login', 'guest');
+    if (AUTH && AUTH.currentUser) { try { await AUTH.signOut(); } catch (e) {} }
+    await enterGame();
+  });
+  $('setupForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    if (!AUTH) return showError('suErr', 'Firebase Auth is not initialized.');
+    var u = cleanName($('suUser').value), p = $('suPass').value;
+    showError('suErr', '');
+    if (!NAME_OK.test(u)) return showError('suErr', 'Username: 2 to 20 letters, numbers, - or _.');
+    if (p.length < 6) return showError('suErr', 'Firebase requires at least 6 characters for passwords.');
+    $('suGo').disabled = true;
+    try {
+      await createUser(u, p, 'admin', true);
+      noUsers = false;
+      account = { username: u, role: 'admin' };
+      store.set('ew_login', u);
+      await enterGame();
+    } catch (err) {
+      console.error(err);
+      if (err.code === 'auth/email-already-in-use') {
+        showError('suErr', 'This username already exists! Please sign in using the Operator Sign In form above.');
+      } else {
+        showError('suErr', err.message || 'Could not create account.');
+      }
+    }
+    $('suGo').disabled = false;
+  });
+  function logout() {
+    account = null;
+    store.set('ew_login', null);
+    if (AUTH) { try { AUTH.signOut(); } catch (e) {} }
+    closeSheet();
+    showLogin();
+  }
+
+  /* ---------- panels ---------- */
+  var openPanel = null;
+  function openSheet(which) {
+    openPanel = which;
+    $('pLog').hidden = which !== 'log'; $('pSet').hidden = which !== 'set';
+    $('sheetTitle').textContent = which === 'log' ? (account ? 'Learning log: ' + account.username : 'My learning log') : 'Settings';
+    if (which === 'log') renderLog(); else renderSettings();
+    $('ov').hidden = false;
+    $('btnClose').focus();
+  }
+  function closeSheet() { $('ov').hidden = true; openPanel = null; }
+  function renderLog() {
+    $('stPlayed').textContent = stats.played;
+    $('stWin').textContent = stats.played ? Math.round(stats.wins / stats.played * 100) : 0;
+    $('stStreak').textContent = stats.streak; $('stMax').textContent = stats.max;
+    var top = Math.max.apply(null, stats.dist.concat([1])), d = $('dist'); d.innerHTML = '';
+    stats.dist.forEach(function (n, i) {
+      var r = document.createElement('div'); r.className = 'drow';
+      var l = document.createElement('span'); l.textContent = i + 1;
+      var b = document.createElement('div'); b.className = 'dbar'; b.textContent = n; b.style.width = Math.max(8, n / top * 100) + '%';
+      r.appendChild(l); r.appendChild(b); d.appendChild(r);
+    });
+    $('learnTitle').textContent = 'My word book (' + learned.length + ' / ' + WORDS.length + ')';
+    var ul = $('learned'); ul.innerHTML = '';
+    if (!learned.length) ul.appendChild(h('li', { class: 'empty', text: 'Finish a round and the word, its definition and its topic are saved here.' }));
+    learned.slice().sort().forEach(function (w) {
+      var e = byWord[w]; if (!e) return;
+      ul.appendChild(h('li', null, [h('b', { text: w }), h('span', { text: e.d || e.c })]));
+    });
+  }
+  function renderSettings() {
+    $('modeDaily').setAttribute('aria-pressed', settings.mode === 'daily');
+    $('modePractice').setAttribute('aria-pressed', settings.mode === 'practice');
+    $('setTopic').checked = !!settings.topic; $('setCb').checked = !!settings.cb;
+    $('acctRow').hidden = !AUTH;
+    $('acctText').textContent = account ? 'Signed in as ' + account.username : 'Playing as a guest. Sign in to sync results to cloud.';
+    $('btnAcct').textContent = account ? 'Log out' : 'Sign in';
+    $('about').textContent = WORDS.length + ' environmental words across energy, climate, ocean, pollution, ecology, water, farming, land and recycling. Every answer comes with a short definition and a fact. Guesses are checked against a built-in list of about 12,600 five-letter English words.';
+  }
+  function applySettings() { document.documentElement.setAttribute('data-cb', settings.cb ? '1' : '0'); }
+
+  /* ---------- teacher dashboard ---------- */
+  var adm = { tab: 'schedule', date: null, users: null };
+  function showAdmin() {
+    showView('viewAdmin');
+    $('admWho').textContent = 'Signed in as ' + account.username;
+    $('admNote').hidden = !!DB;
+    adm.date = adm.date || dateKey();
+    renderAdmin();
+  }
+  function renderAdmin() {
+    ['schedule', 'results', 'words', 'students'].forEach(function (t) { $('tab-' + t).setAttribute('aria-pressed', adm.tab === t); });
+    var body = $('admBody'); body.innerHTML = '';
+    if (adm.tab === 'schedule') renderSchedule(body);
+    else if (adm.tab === 'results') renderResults(body);
+    else if (adm.tab === 'words') renderWordBank(body);
+    else renderAccounts(body);
+  }
+  async function getUsers(force) {
+    if (adm.users && !force) return adm.users;
+    var snap = await withTimeout(DB.collection('users').get(), 4000);
+    adm.users = snap.docs.map(function (d) { var x = d.data(); return { username: d.id, role: x.role === 'admin' ? 'admin' : 'student' }; }).sort(function (a, b) { return a.username < b.username ? -1 : 1; });
+    return adm.users;
+  }
+  function saveFail() { toast('Could not save. Please check Firestore Database & Rules in Firebase Console.'); }
+
+  function renderSchedule(body) {
+    var today = dateKey();
+    body.appendChild(h('p', { class: 'muted', text: 'Choose the daily word for each date. “Auto” uses the built-in rotation. Changing today’s word does not affect students who already started.' }));
+    for (var i = 0; i < 14; i++) (function (key, i) {
+      var sel = h('select', { 'aria-label': 'Word for ' + fmtDate(key) });
+      sel.appendChild(h('option', { value: '', text: 'Auto (' + defaultWord(key) + ')' }));
+      WORDS.forEach(function (e) { sel.appendChild(h('option', { value: e.w, text: e.w + '  ·  ' + e.c })); });
+      sel.value = (schedule[key] && byWord[schedule[key]]) ? schedule[key] : '';
+      sel.addEventListener('change', async function () {
+        var prev = schedule[key] || '', v = sel.value;
+        try {
+          if (v) { await withTimeout(DB.doc('schedule/' + key).set({ word: v, by: account.username, updatedAt: Date.now() }), 4000); schedule[key] = v; }
+          else { await withTimeout(DB.doc('schedule/' + key).delete(), 4000); delete schedule[key]; }
+          toast(v ? fmtDate(key) + ': ' + v : fmtDate(key) + ': auto');
+        } catch (e) { sel.value = prev; saveFail(); }
+      });
+      body.appendChild(h('div', { class: 'srow' }, [
+        h('div', { class: 'sdate' }, [h('b', { text: fmtDate(key) }), i === 0 ? h('span', { class: 'chip', text: 'Today' }) : null]), sel
+      ]));
+    })(addDays(today, i), i);
+  }
+
+  async function renderResults(body) {
+    var key = adm.date;
+    var dateIn = h('input', { type: 'date', id: 'resDate', value: key, 'aria-label': 'Date' });
+    dateIn.addEventListener('change', function () { if (/^\d{4}-\d{2}-\d{2}$/.test(dateIn.value)) { adm.date = dateIn.value; renderAdmin(); } });
+    body.appendChild(h('div', { class: 'inline' }, [h('label', { class: 'field', style: 'max-width:200px' }, [h('span', { text: 'Date' }), dateIn]), h('button', { class: 'ghost', type: 'button', text: 'Refresh', onclick: function () { renderAdmin(); } })]));
+    var out = h('div', { class: 'panel' }, [h('p', { class: 'muted', text: 'Loading…' })]);
+    body.appendChild(out);
+    var users, entries = {};
+    try {
+      users = await getUsers(true);
+      var snap = await withTimeout(DB.collection('results/' + key + '/entries').get(), 4000);
+      snap.docs.forEach(function (d) { entries[d.id] = d.data(); });
+    } catch (e) { out.textContent = 'Could not load results. Make sure Firestore Database is enabled.'; return; }
+    if (adm.tab !== 'results' || adm.date !== key) return;
+    out.innerHTML = '';
+    var ans = wordForDate(key), a = byWord[ans];
+    out.appendChild(h('div', { class: 'card' }, [
+      h('span', { class: 'res-label', text: 'Daily answer for ' + fmtDate(key) }),
+      h('div', { class: 'inline' }, [h('span', { class: 'res-word', text: ans }), h('span', { class: 'chip', text: a.c })]),
+      h('div', { text: a.d || '' }),
+      schedule[key] ? null : h('p', { class: 'muted', text: 'Chosen automatically. You can set it on the Daily words tab.' })
+    ]));
+    var names = users.filter(function (u) { return u.role === 'student'; }).map(function (u) { return u.username; });
+    Object.keys(entries).forEach(function (n) { if (names.indexOf(n) < 0) names.push(n); });
+    var played = 0, solved = 0, tries = 0, trs = [];
+    names.forEach(function (n) {
+      var e = entries[n], pill, cnt = '', hint = '', gs = '';
+      if (!e) pill = h('span', { class: 'pill', text: 'Not played' });
+      else {
+        played++;
+        var g = e.guesses || [];
+        if (e.status === 'won') { solved++; tries += g.length; pill = h('span', { class: 'pill win', text: 'Solved' }); }
+        else if (e.status === 'lost') pill = h('span', { class: 'pill miss', text: 'Missed' });
+        else pill = h('span', { class: 'pill mid', text: 'In progress' });
+        cnt = String(g.length); hint = e.hint ? 'Yes' : ''; gs = g.join(' › ');
+        if (e.answer && e.answer !== ans) gs += '  (word: ' + e.answer + ')';
+      }
+      trs.push(h('tr', null, [h('td', { text: n }), h('td', null, [pill]), h('td', { class: 'num', text: cnt }), h('td', { text: hint }), h('td', { text: gs })]));
+    });
+    out.appendChild(h('p', { class: 'muted', text: names.length ? played + ' of ' + names.length + ' played · ' + solved + ' solved' + (solved ? ' · average ' + (tries / solved).toFixed(1) + ' tries' : '') : 'No student accounts yet.' }));
+    if (names.length) out.appendChild(h('div', { class: 'tblwrap' }, [h('table', null, [
+      h('thead', null, [h('tr', null, [h('th', { text: 'Student' }), h('th', { text: 'Result' }), h('th', { class: 'num', text: 'Tries' }), h('th', { text: 'Hint' }), h('th', { text: 'Guesses' })])]),
+      h('tbody', null, trs)])]));
+  }
+
+  function renderWordBank(body) {
+    var cats = {}; WORDS.forEach(function (e) { cats[e.c] = 1; });
+    var fw = h('input', { type: 'text', id: 'nwWord', maxlength: '5', autocapitalize: 'characters', spellcheck: 'false' });
+    var fc = h('input', { type: 'text', id: 'nwCat', maxlength: '24', list: 'catList' });
+    var dl = h('datalist', { id: 'catList' }, Object.keys(cats).sort().map(function (c) { return h('option', { value: c }); }));
+    var fd = h('input', { type: 'text', id: 'nwDef', maxlength: '120' });
+    var ff = h('textarea', { class: 'in', id: 'nwFact', maxlength: '300' });
+    var msg = h('p', { class: 'err', hidden: true });
+    var add = h('button', { class: 'btn', type: 'button', text: 'Add word' });
+    add.addEventListener('click', async function () {
+      var w = fw.value.trim().toUpperCase(), c = fc.value.trim(), d = fd.value.trim(), f = ff.value.trim();
+      msg.hidden = true; msg.className = 'err';
+      var bad = !/^[A-Z]{5}$/.test(w) ? 'The word must be exactly 5 letters (A to Z).' : byWord[w] ? w + ' is already in the word bank.' : !c ? 'Add a topic, such as Energy or Ocean.' : '';
+      if (bad) { msg.textContent = bad; msg.hidden = false; return; }
+      add.disabled = true;
+      try {
+        await withTimeout(DB.doc('words/' + w).set({ w: w, c: c, d: d, f: f, by: account.username, updatedAt: Date.now() }), 4000);
+        custom[w] = { w: w, c: c, d: d, f: f }; rebuildWords(); renderAdmin(); toast(w + ' added');
+      } catch (e) { add.disabled = false; saveFail(); }
+    });
+    body.appendChild(h('div', { class: 'card' }, [
+      h('h2', { text: 'Add a word' }),
+      h('div', { class: 'formgrid' }, [
+        h('label', { class: 'field' }, [h('span', { text: 'Word (5 letters)' }), fw]),
+        h('label', { class: 'field' }, [h('span', { text: 'Topic' }), fc, dl]),
+        h('label', { class: 'field full' }, [h('span', { text: 'Definition' }), fd]),
+        h('label', { class: 'field full' }, [h('span', { text: 'Did you know? (optional)' }), ff])
+      ]), msg, add
+    ]));
+    var cw = Object.keys(custom).sort();
+    var list = h('div', { class: 'card' }, [h('h2', { text: 'Your words (' + cw.length + ')' })]);
+    if (!cw.length) list.appendChild(h('p', { class: 'muted', text: 'No custom words yet. They can be picked on the Daily words tab and appear in practice mode.' }));
+    cw.forEach(function (w) {
+      var e = custom[w], del = h('button', { class: 'ghost small', type: 'button', text: 'Delete' });
+      del.addEventListener('click', async function () {
+        if (del.dataset.arm !== '1') { del.dataset.arm = '1'; del.textContent = 'Sure?'; del.classList.add('danger'); return; }
+        try { await withTimeout(DB.doc('words/' + w).delete(), 4000); delete custom[w]; rebuildWords(); renderAdmin(); toast(w + ' deleted'); } catch (err) { saveFail(); }
+      });
+      list.appendChild(h('div', { class: 'inline', style: 'justify-content:space-between' }, [h('div', null, [h('b', { text: w + ' ' }), h('span', { class: 'muted', text: e.c + (e.d ? ' · ' + e.d : '') })]), del]));
+    });
+    body.appendChild(list);
+    var det = h('details', { class: 'card' }, [h('summary', { text: 'Built-in words (' + NB + ')' }),
+      h('div', { class: 'wlist' }, BUILTIN.map(function (e) { return h('span', { text: e.w + ' · ' + e.c }); }))]);
+    body.appendChild(det);
+  }
+
+  async function renderAccounts(body) {
+    var out = h('div', { class: 'panel' }, [h('p', { class: 'muted', text: 'Loading…' })]);
+    body.appendChild(out);
+    var users, prog = {};
+    try {
+      users = await getUsers(true);
+      var snap = await withTimeout(DB.collection('progress').get(), 4000);
+      snap.docs.forEach(function (d) { prog[d.id] = d.data().stats || {}; });
+    } catch (e) { out.textContent = 'Could not load accounts. Make sure Firestore Database is enabled.'; return; }
+    if (adm.tab !== 'students') return;
+    out.innerHTML = '';
+    var nu = h('input', { type: 'text', id: 'nuName', maxlength: '20', autocapitalize: 'none', spellcheck: 'false' });
+    var np = h('input', { type: 'text', id: 'nuPass', maxlength: '40', autocomplete: 'off', placeholder: 'Min 6 characters' });
+    var nr = h('select', { id: 'nuRole' }, [h('option', { value: 'student', text: 'Student' }), h('option', { value: 'admin', text: 'Teacher' })]);
+    var msg = h('p', { class: 'err', hidden: true });
+    var addBtn = h('button', { class: 'btn', type: 'button', text: 'Add account' });
+    addBtn.addEventListener('click', async function () {
+      var u = cleanName(nu.value), p = np.value;
+      msg.hidden = true; msg.className = 'err';
+      var bad = !NAME_OK.test(u) ? 'Username: 2 to 20 letters, numbers, - or _.' : p.length < 6 ? 'Firebase requires at least 6 characters for passwords.' : users.some(function (x) { return x.username === u; }) ? 'That username is taken.' : '';
+      if (bad) { msg.textContent = bad; msg.hidden = false; return; }
+      addBtn.disabled = true;
+      try { await createUser(u, p, nr.value, false); toast('Account ' + u + ' created'); renderAdmin(); } catch (e) { addBtn.disabled = false; msg.textContent = e.message || 'Could not create account.'; msg.hidden = false; }
+    });
+    out.appendChild(h('div', { class: 'card' }, [
+      h('h2', { text: 'Add an account' }),
+      h('div', { class: 'formgrid' }, [
+        h('label', { class: 'field' }, [h('span', { text: 'Username' }), nu]),
+        h('label', { class: 'field' }, [h('span', { text: 'Password' }), np]),
+        h('label', { class: 'field' }, [h('span', { text: 'Role' }), nr])
+      ]), msg, addBtn
+    ]));
+    var trs = users.map(function (u) {
+      var s = prog[u.username] || {};
+      var del = h('button', { class: 'ghost small', type: 'button', text: 'Delete' });
+      if (account && u.username === account.username) del.disabled = true;
+      del.addEventListener('click', async function () {
+        if (del.dataset.arm !== '1') { del.dataset.arm = '1'; del.textContent = 'Sure?'; del.classList.add('danger'); return; }
+        try { await withTimeout(DB.doc('users/' + u.username).delete(), 4000); toast(u.username + ' removed from roster'); renderAdmin(); } catch (e) { saveFail(); }
+      });
+      return h('tr', null, [h('td', { text: u.username }), h('td', { text: u.role === 'admin' ? 'Teacher' : 'Student' }),
+        h('td', { class: 'num', text: String(s.played || 0) }), h('td', { class: 'num', text: String(s.wins || 0) }),
+        h('td', null, [del])]);
+    });
+    out.appendChild(h('div', { class: 'tblwrap' }, [h('table', null, [
+      h('thead', null, [h('tr', null, [h('th', { text: 'Username' }), h('th', { text: 'Role' }), h('th', { class: 'num', text: 'Played' }), h('th', { class: 'num', text: 'Wins' }), h('th', { text: 'Action' })])]),
+      h('tbody', null, trs)])]));
+    out.appendChild(h('p', { class: 'muted', text: 'Accounts are authenticated via Firebase Auth. Deleting a student removes them from the classroom roster.' }));
+  }
+
+  /* ---------- wiring ---------- */
+  buildBoard(); buildKeys(); applySettings();
+  $('btnHint').addEventListener('click', function () { if (!game || game.status !== 'play') return; game.hint = true; saveGame(); renderClue(); });
+  $('btnLog').addEventListener('click', function () { openSheet('log'); });
+  $('btnSet').addEventListener('click', function () { openSheet('set'); });
+  $('btnManage').addEventListener('click', function () { showAdmin(); });
+  $('btnBack').addEventListener('click', async function () { await enterGame(); });
+  $('btnClose').addEventListener('click', closeSheet);
+  $('btnAcct').addEventListener('click', function () { if (account) logout(); else { closeSheet(); showLogin(); } });
+  $('ov').addEventListener('click', function (e) { if (e.target === $('ov')) closeSheet(); });
+  $('modeDaily').addEventListener('click', async function () { if (settings.mode !== 'daily') { await startGame('daily'); renderSettings(); } });
+  $('modePractice').addEventListener('click', async function () { if (settings.mode !== 'practice') { await startGame('practice'); renderSettings(); } });
+  $('setTopic').addEventListener('change', function (e) { settings.topic = e.target.checked; store.set('ew_set', settings); renderClue(); });
+  $('setCb').addEventListener('change', function (e) { settings.cb = e.target.checked; store.set('ew_set', settings); applySettings(); });
+  $('btnNext').addEventListener('click', function () { store.set(practiceKey(), null); startGame('practice'); });
+  $('btnShare').addEventListener('click', function () {
+    var text = shareText();
+    var fallback = function () { var box = $('shareBox'); box.value = text; box.hidden = false; box.focus(); box.select(); toast('Copy the text below'); };
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(function () { toast('Result copied'); }, fallback);
+      else fallback();
+    } catch (e) { fallback(); }
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('[data-tab]'), function (b) {
+    b.addEventListener('click', function () { adm.tab = b.getAttribute('data-tab'); renderAdmin(); });
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && openPanel) { closeSheet(); return; }
+    if ($('viewGame').hidden || openPanel || e.ctrlKey || e.metaKey || e.altKey) return;
+    var t = e.target && e.target.tagName;
+    if (t === 'TEXTAREA' || t === 'INPUT' || t === 'SELECT') return;
+    if (e.key === 'Enter') { if (game && game.status === 'play') { e.preventDefault(); press('enter'); } }
+    else if (e.key === 'Backspace') { if (game && game.status === 'play') { e.preventDefault(); press('back'); } }
+    else if (/^[a-zA-Z]$/.test(e.key)) press(e.key.toLowerCase());
+  });
+
+  /* ---------- start ---------- */
+  function getAuthState() {
+    if (!AUTH) return Promise.resolve(null);
+    return withTimeout(new Promise(function (resolve) {
+      var unsubscribe = AUTH.onAuthStateChanged(function (user) {
+        unsubscribe();
+        resolve(user);
+      });
+    }), 2500).catch(function () { return null; });
+  }
+
+  async function boot() {
+    var saved = store.get('ew_login', null);
+
+    // If user explicitly chose guest mode previously, boot straight into local guest game
+    if (saved === 'guest') {
+      account = null;
+      await enterGame();
+      return;
+    }
+
+    if (DB) {
+      try {
+        await Promise.all([loadCustomWords(), loadSchedule()]);
+        var snap = await withTimeout(DB.collection('users').limit(1).get(), 3000);
+        noUsers = snap.empty;
+      } catch (e) {
+        console.warn('Firestore initial check skipped or timed out:', e);
+      }
+    }
+
+    var user = await getAuthState();
+    if (user && user.email) {
+      var username = user.email.split('@')[0];
+      var role = (username === 'teacher') ? 'admin' : 'student';
+      if (DB) {
+        try {
+          var s = await withTimeout(DB.doc('users/' + username).get(), 3000);
+          if (s.exists) role = s.data().role === 'admin' ? 'admin' : 'student';
+        } catch (e) {}
+      }
+      account = { username: username, role: role };
+      store.set('ew_login', username);
+      await enterGame();
+      return;
+    }
+
+    showLogin();
+  }
+
+  boot();
+})();
+</script>
+</body>
+</html>
