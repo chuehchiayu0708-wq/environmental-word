@@ -869,7 +869,7 @@
 (function () {
   document.documentElement.lang = 'en';
 
-  /* Built-in 51 environmental words */
+  /* Built-in 98 environmental words (51 original + 47 expanded) */
   var BUILTIN = [
     { w: "SOLAR", c: "Energy", d: "Powered by energy from the sun.", f: "More sunlight hits Earth in one hour than humanity uses in a year." },
     { w: "WASTE", c: "Recycling", d: "Material that is thrown away.", f: "The world produces about 2 billion tonnes of municipal solid waste every year." },
@@ -921,7 +921,54 @@
     { w: "GASES", c: "Climate", d: "Substances that spread freely, like air.", f: "The main greenhouse gases are carbon dioxide, methane and nitrous oxide." },
     { w: "NICHE", c: "Ecology", d: "The role a species plays in its ecosystem.", f: "Each species has its own ecological niche, including its food, habitat and active hours." },
     { w: "BIRDS", c: "Ecology", d: "Animals with feathers and wings.", f: "Migratory birds rely on wetlands to rest and feed, so losing wetlands disrupts their routes." },
-    { w: "WORMS", c: "Farming", d: "Long, soft animals with no legs.", f: "Earthworms turn over soil and speed up decomposition, which makes them great helpers for healthy soil." }
+    { w: "WORMS", c: "Farming", d: "Long, soft animals with no legs.", f: "Earthworms turn over soil and speed up decomposition, which makes them great helpers for healthy soil." },
+    { w: "FLORA", c: "Ecology", d: "All the plant life found in a particular region or habitat.", f: "Scientists estimate there are nearly 400,000 species of flora on Earth, and many have medicinal uses." },
+    { w: "FAUNA", c: "Ecology", d: "All the animal life living in a particular region or period.", f: "Protecting natural habitats is the best way to keep native fauna from becoming endangered." },
+    { w: "WOODS", c: "Ecology", d: "An area of land covered with growing trees, smaller than a forest.", f: "Walking in the woods lowers stress and helps people appreciate local biodiversity." },
+    { w: "MARSH", c: "Ecology", d: "A low-lying wetland dominated by grasses and reeds.", f: "Coastal marshes act like giant sponges that protect inland towns from storm surges." },
+    { w: "GRASS", c: "Ecology", d: "Common green plants with narrow leaves that cover lawns and plains.", f: "Grasslands store huge amounts of carbon underground in their deep, tangled root systems." },
+    { w: "TAIGA", c: "Ecology", d: "The cold, snowy forest biome filled with pine and spruce trees.", f: "The taiga is the world's largest land biome, stretching across northern North America, Europe and Asia." },
+    { w: "OASIS", c: "Land", d: "A fertile green spot in a desert where water is found.", f: "Oases rely on underground aquifers and provide vital resting stops for desert wildlife and travelers." },
+    { w: "WORLD", c: "Climate", d: "The Earth together with all of its countries, peoples and ecosystems.", f: "World Environment Day is celebrated on June 5 each year to encourage global action for nature." },
+    { w: "FUNGI", c: "Ecology", d: "Organisms like mushrooms and molds that break down dead matter.", f: "Fungi recycle nutrients back into the soil and connect tree roots in underground networks." },
+    { w: "WEEDS", c: "Ecology", d: "Wild plants growing where they are not wanted, often crowding crops.", f: "Some native weeds like dandelions are actually important early-spring food sources for bees." },
+    { w: "TRUNK", c: "Ecology", d: "The thick main wooden stem of a tree.", f: "Each ring inside a tree trunk marks one year of growth and records past climate conditions." },
+    { w: "FRUIT", c: "Farming", d: "The sweet, seed-bearing part of a flowering plant.", f: "Eating seasonal fruit grown nearby cuts down on the energy used for cold storage and shipping." },
+    { w: "LEAFY", c: "Ecology", d: "Having many leaves or shaded by dense foliage.", f: "Leafy city streets can be several degrees cooler in summer than streets without trees." },
+    { w: "HERDS", c: "Ecology", d: "Large groups of grazing animals that live and travel together.", f: "Wild herds help keep grasslands healthy by trimming plants and fertilizing the soil naturally." },
+    { w: "FLOCK", c: "Ecology", d: "A group of birds or sheep moving or feeding together.", f: "Birds fly in V-shaped flocks to save energy by catching the upward air currents from the bird ahead." },
+    { w: "LAKES", c: "Water", d: "Large bodies of fresh water surrounded by land.", f: "Lakes hold most of the liquid fresh water on Earth's surface and support rich freshwater wildlife." },
+    { w: "CREEK", c: "Water", d: "A narrow, natural stream of fresh water smaller than a river.", f: "Shady trees along a creek keep the water cool enough for trout and frogs to survive." },
+    { w: "REEFS", c: "Ocean", d: "Ridges of rock or coral near the surface of the sea.", f: "Healthy reefs break the force of ocean waves and protect shorelines from erosion." },
+    { w: "SHELL", c: "Ocean", d: "The hard protective outer case of a sea creature or turtle.", f: "More acidic oceans make it harder for clams and snails to build strong calcium shells." },
+    { w: "WAVES", c: "Ocean", d: "Moving ridges of water on the surface of the sea.", f: "Wave energy converters can capture the constant motion of ocean waves to generate clean electricity." },
+    { w: "POOLS", c: "Water", d: "Small, still bodies of water, such as tide pools along rocky shores.", f: "Tide pools are miniature ecosystems where starfish, crabs and anemones survive changing tides." },
+    { w: "FRESH", c: "Water", d: "Clean and not salty, like the water in rivers and lakes.", f: "Less than 3% of all water on Earth is fresh water, and most of it is locked in glaciers." },
+    { w: "WINDS", c: "Energy", d: "Natural movements of air across the Earth's surface.", f: "Modern wind turbines turn steady winds into clean electricity without burning any fuel." },
+    { w: "RAINS", c: "Climate", d: "Drops of fresh water falling from clouds to the ground.", f: "Harvesting rainwater from roofs provides free water for gardens and reduces stormwater runoff." },
+    { w: "FROST", c: "Climate", d: "Thin ice crystals that form on surfaces when temperatures drop below freezing.", f: "Warmer winters are changing frost dates, which can confuse plants that bloom too early." },
+    { w: "MELTS", c: "Climate", d: "Changes from solid ice or snow into liquid water.", f: "When mountain snowpack melts too fast in spring, rivers can flood and run dry later in summer." },
+    { w: "THAWS", c: "Climate", d: "Warms up enough for frozen ground, ice or snow to soften.", f: "As Arctic permafrost thaws, it releases trapped methane and carbon dioxide into the air." },
+    { w: "CHILL", c: "Climate", d: "A noticeable coldness in the air or water.", f: "Setting your air conditioner just 1°C warmer reduces the chill needed and saves up to 10% energy." },
+    { w: "SOILS", c: "Land", d: "The top layers of earth in which plants grow.", f: "Healthy soils teem with billions of microbes and store more carbon than all the world's forests." },
+    { w: "SANDS", c: "Land", d: "Tiny loose grains of worn rock found on beaches and in deserts.", f: "Sand mining from rivers and beaches can damage habitats and worsen coastal erosion." },
+    { w: "ROCKS", c: "Land", d: "Solid mineral materials forming the Earth's crust.", f: "Certain rocks naturally absorb carbon dioxide over time in a process called weathering." },
+    { w: "STONE", c: "Land", d: "Hard, solid non-metallic mineral matter used for building.", f: "Using local stone in buildings avoids the high carbon emissions of manufacturing cement." },
+    { w: "CLIFF", c: "Land", d: "A steep, high rock face, especially at the edge of the sea.", f: "Sea cliffs provide safe nesting ledges for thousands of puffins, gulls and other seabirds." },
+    { w: "MINES", c: "Land", d: "Deep holes or tunnels dug into the earth to extract coal or metals.", f: "Recycling electronics reduces the need for new mines that disturb forests and waterways." },
+    { w: "SCRAP", c: "Recycling", d: "Leftover metal, paper or material that can be collected and recycled.", f: "Recycling scrap steel saves about 75% of the energy needed to make steel from raw iron ore." },
+    { w: "DUMPS", c: "Pollution", d: "Sites where garbage and waste are piled up and left.", f: "Open waste dumps can leak toxic liquids into groundwater and release harmful gases." },
+    { w: "FUELS", c: "Energy", d: "Materials such as coal, gas, wood or biofuels burned to produce energy.", f: "Switching from fossil fuels to clean electricity is the fastest way to cut carbon emissions." },
+    { w: "COALS", c: "Pollution", d: "Black sedimentary rocks burned for power, releasing heavy carbon emissions.", f: "Burning coal produces more carbon dioxide per unit of electricity than any other major fuel." },
+    { w: "FIRES", c: "Climate", d: "Uncontrolled flames burning across forests, grasslands or brush.", f: "Hotter, drier weather makes forest fires spread faster and release huge plumes of smoke." },
+    { w: "ASHES", c: "Pollution", d: "The powdery gray residue left behind after something burns.", f: "Wildfire ashes can wash into rivers after rainstorms and harm fish and drinking water." },
+    { w: "GRIME", c: "Pollution", d: "A layer of dark dirt or soot clinging to surfaces.", f: "Traffic grime on city buildings comes from soot and exhaust particles floating in polluted air." },
+    { w: "SMOGS", c: "Pollution", d: "Thick, hazy air pollution formed when smoke and exhaust mix with sunlight.", f: "Smog irritates lungs and eyes, which is why cities promote public transit and clean vehicles." },
+    { w: "VEGAN", c: "Sustainable living", d: "Eating only plant-based foods without meat, dairy or eggs.", f: "Plant-based diets generally require far less land and water and produce fewer greenhouse gases." },
+    { w: "LOCAL", c: "Sustainable living", d: "Produced or grown close to where it is sold and eaten.", f: "Buying local produce supports nearby farmers and cuts down on long-distance transport emissions." },
+    { w: "PARKS", c: "Ecology", d: "Protected natural areas or green spaces kept for wildlife and people.", f: "National parks safeguard endangered species and keep ancient forests and wetlands intact." },
+    { w: "TRAIL", c: "Sustainable living", d: "A marked path through woods, mountains or nature reserves.", f: "Staying on the marked trail protects fragile wildflowers and prevents soil erosion." },
+    { w: "SAVES", c: "Sustainable living", d: "Avoids wasting resources such as water, electricity or money.", f: "Turning off unused lights and unplugging idle chargers saves electricity every single day." }
   ];
   var NB = BUILTIN.length;
   var WORDS = BUILTIN.slice(), byWord = {}, custom = {};
