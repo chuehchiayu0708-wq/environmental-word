@@ -6,35 +6,37 @@
   <title>Eco Wordle</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Figtree:wght@400;500;700&family=JetBrains+Mono:wght@500;700&display=swap">
 
-  <!-- Firebase SDKs (Compat v10.8.0 for single-file static hosting) -->
+  <!-- Firebase SDKs (Compat v10.8.0 for static GitHub Pages hosting) -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
-  <!-- Three.js r128 for interactive 3D Smog Free Tower environment -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-
   <style>
-    /* Layout: Interactive 3D Smog Free Tower Stage + Anti-Fatigue Frosted 3D Console */
+    /* Layout: Eco Wordle housed inside the Smog Free Tower central chamber with embedded side louver wings */
     :root {
       color-scheme: light;
       box-sizing: border-box;
       padding-top: env(safe-area-inset-top, 0px);
       padding-bottom: env(safe-area-inset-bottom, 0px);
-      --bg: #dfe6ec;
-      --glass: rgba(248, 250, 252, 0.82);
-      --glass-strong: rgba(252, 253, 255, 0.92);
-      --glass-border: rgba(255, 255, 255, 0.72);
-      --surface: #f5f8fa;
-      --surface-2: #e9eff4;
-      --fg: #1c2630;
-      --muted: #5a6978;
-      --line: rgba(148, 163, 184, 0.34);
-      --key: #edf2f6;
-      --key-lip: #c5d0dc;
+      --sky-bg: #dce3ea;
+      --sky-clean: #d6ebe8;
+      --chamber: #f6f8fa;
+      --surface: #ffffff;
+      --surface-2: #ebf0f5;
+      --pillar: #cbd5e1;
+      --pillar-edge: #94a3b8;
+      --louver-top: #f1f5f9;
+      --louver-mid: #dbe3ec;
+      --louver-bot: #b8c4d2;
+      --wing-well: #cbd5e1;
+      --fg: #18222d;
+      --muted: #566575;
+      --line: rgba(148, 163, 184, 0.36);
+      --key: #e6ecf2;
+      --key-lip: #c1ccd8;
       --tile-top: #ffffff;
       --tile-bot: #eef3f7;
-      --tile-lip: #cbd5e1;
+      --tile-lip: #c8d2de;
       --accent: #0f766e;
       --hit: #0d9488;
       --hit-lip: #0a6c63;
@@ -45,6 +47,7 @@
       --on-hit: #ffffff;
       --on-near: #1c1505;
       --on-miss: #ffffff;
+      --glow-color: rgba(13, 148, 136, 0.14);
       --font-display: 'Bricolage Grotesque', system-ui, sans-serif;
       --font-body: 'Figtree', system-ui, -apple-system, 'Segoe UI', sans-serif;
       --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
@@ -54,20 +57,25 @@
 
     @media (prefers-color-scheme: dark) {
       :root:not([data-theme="light"]) {
-        --bg: #10171e;
-        --glass: rgba(20, 29, 38, 0.82);
-        --glass-strong: rgba(24, 34, 45, 0.92);
-        --glass-border: rgba(148, 163, 184, 0.18);
-        --surface: #18222c;
-        --surface-2: #202d3a;
+        --sky-bg: #0f161e;
+        --sky-clean: #0e1e21;
+        --chamber: #16202a;
+        --surface: #1d2936;
+        --surface-2: #243242;
+        --pillar: #2b3a4b;
+        --pillar-edge: #3d5066;
+        --louver-top: #2c3b4c;
+        --louver-mid: #202c3a;
+        --louver-bot: #131b24;
+        --wing-well: #111821;
         --fg: #e2e8f0;
         --muted: #94a3b8;
-        --line: rgba(148, 163, 184, 0.2);
-        --key: #243240;
+        --line: rgba(148, 163, 184, 0.22);
+        --key: #273646;
         --key-lip: #131b24;
-        --tile-top: #22303e;
-        --tile-bot: #19242f;
-        --tile-lip: #0f161d;
+        --tile-top: #253444;
+        --tile-bot: #1b2734;
+        --tile-lip: #0f161e;
         --accent: #2dd4bf;
         --hit: #14b8a6;
         --hit-lip: #0d7a6e;
@@ -78,24 +86,30 @@
         --on-hit: #041c1a;
         --on-near: #1c1505;
         --on-miss: #e2e8f0;
+        --glow-color: rgba(45, 212, 191, 0.16);
         color-scheme: dark;
       }
     }
     :root[data-theme="dark"] {
-      --bg: #10171e;
-      --glass: rgba(20, 29, 38, 0.82);
-      --glass-strong: rgba(24, 34, 45, 0.92);
-      --glass-border: rgba(148, 163, 184, 0.18);
-      --surface: #18222c;
-      --surface-2: #202d3a;
+      --sky-bg: #0f161e;
+      --sky-clean: #0e1e21;
+      --chamber: #16202a;
+      --surface: #1d2936;
+      --surface-2: #243242;
+      --pillar: #2b3a4b;
+      --pillar-edge: #3d5066;
+      --louver-top: #2c3b4c;
+      --louver-mid: #202c3a;
+      --louver-bot: #131b24;
+      --wing-well: #111821;
       --fg: #e2e8f0;
       --muted: #94a3b8;
-      --line: rgba(148, 163, 184, 0.2);
-      --key: #243240;
+      --line: rgba(148, 163, 184, 0.22);
+      --key: #273646;
       --key-lip: #131b24;
-      --tile-top: #22303e;
-      --tile-bot: #19242f;
-      --tile-lip: #0f161d;
+      --tile-top: #253444;
+      --tile-bot: #1b2734;
+      --tile-lip: #0f161e;
       --accent: #2dd4bf;
       --hit: #14b8a6;
       --hit-lip: #0d7a6e;
@@ -106,6 +120,7 @@
       --on-hit: #041c1a;
       --on-near: #1c1505;
       --on-miss: #e2e8f0;
+      --glow-color: rgba(45, 212, 191, 0.16);
       color-scheme: dark;
     }
     /* Color-blind friendly palette: blue / orange */
@@ -119,101 +134,201 @@
     body {
       margin: 0;
       min-height: 100dvh;
-      background: var(--bg);
+      background: radial-gradient(circle at 50% 18%, var(--surface-2) 0%, var(--sky-bg) 78%);
       color: var(--fg);
       font-family: var(--font-body); font-size: 15px; line-height: 1.55;
-      padding-left: max(14px, env(safe-area-inset-left, 0px));
-      padding-right: max(14px, env(safe-area-inset-right, 0px));
-      padding-block: 14px 26px;
-      position: relative;
+      padding-left: max(10px, env(safe-area-inset-left, 0px));
+      padding-right: max(10px, env(safe-area-inset-right, 0px));
+      padding-block: 14px 28px;
+      transition: background 0.8s ease;
       overflow-x: hidden;
+    }
+    body.air-purified {
+      background: radial-gradient(circle at 50% 15%, var(--sky-clean) 0%, var(--sky-bg) 85%);
     }
     img { max-width: 100%; }
     button { font-family: inherit; color: inherit; }
     button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
-    /* ---- Interactive 3D Canvas Stage (Full Viewport, Drag to Orbit) ---- */
-    #scene3d {
-      position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      display: block;
-      z-index: 0;
-      cursor: grab;
-      touch-action: none;
-    }
-    #scene3d:active { cursor: grabbing; }
-
-    /* Subtle 3D Orbit Hint Pill */
-    .orbit-badge {
-      position: fixed;
-      left: max(16px, env(safe-area-inset-left, 0px));
-      bottom: max(14px, env(safe-area-inset-bottom, 0px));
-      z-index: 1;
-      pointer-events: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 5px 10px;
-      border-radius: 999px;
-      background: var(--glass);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 1px solid var(--glass-border);
-      font-family: var(--font-mono);
-      font-size: 10.5px;
-      color: var(--muted);
-      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
-    }
-    @media (max-width: 859px) {
-      .orbit-badge { display: none; }
-    }
-
-    /* ---- Spatial Stage & Frosted 3D Console Layout ---- */
+    /* ---- Architectural Smog Free Tower Housing (Wordle Embedded Inside) ---- */
     .app { position: relative; z-index: 2; max-width: 460px; margin: 0 auto; display: grid; gap: 12px; }
-    .app.stage-shell {
-      max-width: 450px;
-      margin: 0 auto;
+    .app.tower-monument {
+      max-width: 690px;
+      gap: 0;
     }
-    /* On desktop/landscape tablets, shift console smoothly right-of-center so the 3D Tower stands cleanly beside it */
-    @media (min-width: 860px) {
-      .app.stage-shell {
-        margin-left: auto;
-        margin-right: max(6vw, calc(50vw - 440px));
+
+    /* Top Asymmetric Cantilevered Intake Wings (Daan Roosegaarde Tower Silhouette) */
+    .tower-crown {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      height: 28px;
+      padding-inline: 18px;
+      pointer-events: none;
+    }
+    .crown-wing {
+      width: 112px;
+      height: 22px;
+      background: linear-gradient(180deg, var(--louver-top), var(--louver-bot));
+      border: 1px solid var(--pillar-edge);
+      box-shadow: 0 6px 14px rgba(15, 23, 42, 0.08);
+    }
+    .crown-wing.left {
+      border-radius: 12px 4px 0 0;
+      transform: perspective(260px) rotateY(14deg) skewY(-6deg);
+      transform-origin: bottom right;
+    }
+    .crown-wing.right {
+      width: 126px;
+      height: 26px;
+      border-radius: 4px 14px 0 0;
+      transform: perspective(260px) rotateY(-14deg) skewY(7deg);
+      transform-origin: bottom left;
+    }
+    @media (max-width: 720px) {
+      .tower-crown { height: 14px; padding-inline: 8px; }
+      .crown-wing { width: 54px; height: 12px; }
+      .crown-wing.right { width: 62px; height: 14px; }
+    }
+
+    /* Main Tower Body: [Left Embedded Louver Wing] + [Central Wordle Core] + [Right Embedded Louver Wing] */
+    .tower-assembly {
+      display: grid;
+      grid-template-columns: 108px minmax(0, 1fr) 108px;
+      align-items: stretch;
+      border-radius: 20px;
+      background: var(--wing-well);
+      border: 1px solid var(--pillar-edge);
+      box-shadow:
+        0 24px 54px rgba(15, 23, 42, 0.14),
+        0 4px 14px rgba(15, 23, 42, 0.06);
+      overflow: hidden;
+      position: relative;
+    }
+    @media (max-width: 720px) {
+      .tower-assembly {
+        grid-template-columns: 18px minmax(0, 1fr) 18px;
+        border-radius: 18px;
       }
     }
 
-    /* Soft-3D Frosted Glass Console Card (eliminates eye fatigue) */
-    .console-card {
-      background: var(--glass);
-      backdrop-filter: blur(18px) saturate(135%);
-      -webkit-backdrop-filter: blur(18px) saturate(135%);
-      border: 1px solid var(--glass-border);
-      border-radius: 22px;
-      padding: 16px;
+    /* Embedded Side Louver Wings (Soft Sculpted Slats - Anti-Fatigue) */
+    .tower-wing {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 14px 10px;
+      gap: 10px;
+      position: relative;
+      background: linear-gradient(180deg, var(--wing-well) 0%, var(--surface-2) 50%, var(--wing-well) 100%);
+      transition: box-shadow 0.6s ease;
+    }
+    .tower-wing::before {
+      /* Inner ionization air channel glow */
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 50%, var(--glow-color), transparent 72%);
+      opacity: 0.35;
+      transition: opacity 0.6s ease;
+      pointer-events: none;
+    }
+    .tower-assembly.purified .tower-wing::before,
+    .tower-assembly.active-glow .tower-wing::before {
+      opacity: 1;
+    }
+    .tower-wing.left {
+      border-right: 4px solid var(--pillar);
+      box-shadow: inset -6px 0 14px rgba(15, 23, 42, 0.06);
+    }
+    .tower-wing.right {
+      border-left: 4px solid var(--pillar);
+      box-shadow: inset 6px 0 14px rgba(15, 23, 42, 0.06);
+    }
+
+    /* Individual Wide Sculptural Architectural Louver Slats */
+    .louver-blade {
+      flex: 1 1 0;
+      min-height: 28px;
+      border-radius: 6px;
+      background: linear-gradient(180deg, var(--louver-top) 0%, var(--louver-mid) 58%, var(--louver-bot) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      box-shadow:
+        0 4px 8px rgba(15, 23, 42, 0.09),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+      position: relative;
+      z-index: 1;
+      transition: transform 0.5s ease, border-color 0.5s ease;
+    }
+    .tower-wing.left .louver-blade {
+      transform: perspective(300px) rotateY(10deg) skewY(-4deg);
+    }
+    .tower-wing.right .louver-blade {
+      transform: perspective(300px) rotateY(-10deg) skewY(4deg);
+    }
+    /* Upper-right cutaway inspection module matching the Smog Free Tower photo */
+    .tower-wing.right .louver-blade.core-bay {
+      background: linear-gradient(180deg, var(--surface-2), var(--chamber));
+      border: 1px solid var(--accent);
+      box-shadow: inset 0 0 12px var(--glow-color);
+      display: grid;
+      place-items: center;
+    }
+    .tower-wing.right .louver-blade.core-bay::after {
+      content: "";
+      width: 56%;
+      height: 4px;
+      border-radius: 99px;
+      background: var(--accent);
+      opacity: 0.65;
+    }
+    @media (max-width: 720px) {
+      .tower-wing {
+        padding: 10px 3px;
+        gap: 8px;
+      }
+      .louver-blade {
+        min-height: 16px;
+        border-radius: 3px;
+      }
+      .tower-wing.right .louver-blade.core-bay::after { display: none; }
+    }
+
+    /* Central Purification Chamber (Houses the entire Wordle UI) */
+    .tower-core {
+      background: var(--chamber);
+      padding: 16px 16px 20px;
       display: grid;
       gap: 12px;
-      box-shadow:
-        0 24px 54px rgba(15, 23, 42, 0.12),
-        0 4px 14px rgba(15, 23, 42, 0.05),
-        inset 0 1px 0 rgba(255, 255, 255, 0.55);
+      position: relative;
+      z-index: 2;
     }
     @media (min-width: 640px) {
-      .console-card {
-        padding: 20px 22px 22px;
+      .tower-core {
+        padding: 20px 22px 24px;
         gap: 13px;
       }
     }
 
-    /* ---- Console Header & Telemetry Bar ---- */
+    /* Solid Architectural Base Pedestal */
+    .tower-plinth {
+      height: 14px;
+      margin-inline: 14px;
+      border-radius: 0 0 12px 12px;
+      background: linear-gradient(180deg, var(--pillar) 0%, var(--pillar-edge) 100%);
+      box-shadow: 0 10px 20px rgba(15, 23, 42, 0.12);
+    }
+    @media (max-width: 720px) {
+      .tower-plinth { margin-inline: 8px; height: 10px; }
+    }
+
+    /* ---- Chamber Header & Telemetry Bar ---- */
     .chamber-head {
       display: grid;
       gap: 10px;
       padding-bottom: 10px;
       border-bottom: 1px solid var(--line);
     }
-
     .top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
     .brand { min-width: 0; }
     .brand h1 {
@@ -230,7 +345,7 @@
       box-shadow: 0 2px 0 var(--tile-lip);
       transition: border-color .15s, background .15s, transform .08s, box-shadow .08s;
     }
-    .ghost:hover:not(:disabled) { border-color: var(--accent); background: var(--glass-strong); }
+    .ghost:hover:not(:disabled) { border-color: var(--accent); background: var(--surface-2); }
     .ghost:active:not(:disabled) { transform: translateY(2px); box-shadow: none; }
     .ghost:disabled { opacity: .45; cursor: default; box-shadow: none; }
 
@@ -287,7 +402,6 @@
       display: flex; align-items: center; gap: 9px;
       background: var(--surface); border: 1px solid var(--line);
       border-radius: 12px; padding: 8px 12px; min-height: 46px;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.4);
     }
     .sensor-led {
       width: 8px; height: 8px; border-radius: 50%; flex: none;
@@ -310,14 +424,14 @@
       padding: 2px 7px; border-radius: 6px; letter-spacing: .04em; text-transform: uppercase;
     }
 
-    /* ---- Soft-3D Molded Tile Board ---- */
+    /* ---- Tactile Tile Board ---- */
     .boardWrap {
       position: relative;
       background: var(--surface-2);
       border: 1px solid var(--line);
       border-radius: 16px;
       padding: 14px 12px 16px;
-      box-shadow: inset 0 2px 6px rgba(15, 23, 42, 0.05);
+      box-shadow: inset 0 2px 6px rgba(15, 23, 42, 0.04);
     }
     #board { display: grid; gap: 7px; width: min(100%, 318px); margin: 0 auto; perspective: 800px; }
     .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 7px; transform-style: preserve-3d; }
@@ -330,8 +444,8 @@
       border-radius: 11px;
       box-shadow:
         0 3px 0 var(--tile-lip),
-        0 5px 10px rgba(15, 23, 42, 0.06),
-        inset 0 1px 0 rgba(255, 255, 255, 0.65);
+        0 4px 8px rgba(15, 23, 42, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
       user-select: none;
       transform-style: preserve-3d;
       transition: border-color .15s, background .2s, transform .12s, box-shadow .2s;
@@ -341,52 +455,44 @@
       transform: translateY(-1px);
     }
     .tile[data-state="hit"] {
-      background: linear-gradient(165deg, color-mix(in srgb, var(--hit) 88%, #fff), var(--hit));
+      background: var(--hit);
       border-color: var(--hit);
       color: var(--on-hit);
-      box-shadow:
-        0 3px 0 var(--hit-lip),
-        0 6px 14px color-mix(in srgb, var(--hit) 32%, transparent),
-        inset 0 1px 0 rgba(255, 255, 255, 0.35);
+      box-shadow: 0 3px 0 var(--hit-lip), 0 5px 12px color-mix(in srgb, var(--hit) 28%, transparent);
     }
     .tile[data-state="near"] {
-      background: linear-gradient(165deg, color-mix(in srgb, var(--near) 88%, #fff), var(--near));
+      background: var(--near);
       border-color: var(--near);
       color: var(--on-near);
-      box-shadow:
-        0 3px 0 var(--near-lip),
-        0 6px 14px color-mix(in srgb, var(--near) 28%, transparent),
-        inset 0 1px 0 rgba(255, 255, 255, 0.35);
+      box-shadow: 0 3px 0 var(--near-lip), 0 5px 12px color-mix(in srgb, var(--near) 24%, transparent);
     }
     .tile[data-state="miss"] {
-      background: linear-gradient(165deg, color-mix(in srgb, var(--miss) 90%, #fff), var(--miss));
+      background: var(--miss);
       border-color: var(--miss);
       color: var(--on-miss);
-      box-shadow:
-        0 3px 0 var(--miss-lip),
-        inset 0 1px 0 rgba(255, 255, 255, 0.18);
+      box-shadow: 0 3px 0 var(--miss-lip);
     }
     .tile.pop { animation: pop .14s ease; }
-    .tile.flip { animation: flip3D .52s cubic-bezier(0.22, 1, 0.36, 1); }
+    .tile.flip { animation: flipLouver .52s cubic-bezier(0.22, 1, 0.36, 1); }
     .row.shake { animation: shake .4s ease; }
     @keyframes pop { 50% { transform: scale(1.08) translateY(-2px); } }
-    @keyframes flip3D {
+    @keyframes flipLouver {
       0% { transform: perspective(500px) rotateX(0deg) scale(1); }
-      50% { transform: perspective(500px) rotateX(-90deg) scale(1.04); filter: brightness(0.88); }
+      50% { transform: perspective(500px) rotateX(-90deg) scale(1.04); filter: brightness(0.9); }
       100% { transform: perspective(500px) rotateX(0deg) scale(1); }
     }
     @keyframes shake { 20%, 60% { transform: translateX(-5px); } 40%, 80% { transform: translateX(5px); } }
 
     #msg {
       position: fixed; left: 50%; top: calc(14px + env(safe-area-inset-top, 0px));
-      transform: translateX(-50%); background: var(--fg); color: var(--bg);
+      transform: translateX(-50%); background: var(--fg); color: var(--chamber);
       padding: 8px 16px; border-radius: 10px; font-family: var(--font-mono);
       font-size: 12px; font-weight: 700; max-width: calc(100vw - 32px);
       white-space: normal; text-align: center; pointer-events: none; z-index: 40;
       box-shadow: 0 8px 22px rgba(15, 23, 42, 0.22);
     }
 
-    /* ---- 3D Tactile Keycap Keyboard ---- */
+    /* ---- Tactile Keycap Keyboard ---- */
     #kb { display: grid; gap: 7px; padding-bottom: 2px; }
     .krow { display: flex; gap: 5px; justify-content: center; }
     .krow.mid { padding-inline: 4.5%; }
@@ -396,8 +502,8 @@
       background: var(--key);
       box-shadow:
         0 3px 0 var(--key-lip),
-        0 4px 8px rgba(15, 23, 42, 0.06),
-        inset 0 1px 0 rgba(255, 255, 255, 0.55);
+        0 3px 6px rgba(15, 23, 42, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
       font: 700 14px var(--font-body); cursor: pointer; padding: 0; text-transform: uppercase;
       transition: transform .06s, box-shadow .06s, background-color .15s;
     }
@@ -415,7 +521,7 @@
       background: var(--surface); border: 1px solid var(--line);
       border-top: 3px solid var(--accent);
       border-radius: 14px; padding: 18px; display: grid; gap: 10px;
-      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
     }
     .res-top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
     .res-label { font-family: var(--font-mono); font-size: 11px; font-weight: 700; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; }
@@ -430,7 +536,7 @@
     .btn {
       border: 0; border-radius: 10px; padding: 10px 18px; font-size: 14px; font-weight: 700; cursor: pointer;
       background: var(--accent); color: var(--on-hit);
-      box-shadow: 0 3px 0 var(--hit-lip), 0 6px 14px color-mix(in srgb, var(--accent) 28%, transparent);
+      box-shadow: 0 3px 0 var(--hit-lip);
       transition: transform .08s, box-shadow .08s;
     }
     .btn:active:not(:disabled) { transform: translateY(2px); box-shadow: none; }
@@ -438,8 +544,8 @@
     .btn.alt { background: var(--key); color: var(--fg); border: 1px solid var(--line); box-shadow: 0 3px 0 var(--key-lip); }
     #shareBox { width: 100%; min-height: 96px; background: var(--surface-2); color: var(--fg); border: 1px solid var(--line); border-radius: 8px; padding: 8px; font: 13px/1.5 var(--font-mono); resize: none; }
 
-    .overlay { position: fixed; inset: 0; background: rgba(15, 23, 32, .52); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); display: flex; align-items: flex-end; justify-content: center; z-index: 20; }
-    .sheet { background: var(--glass-strong); width: 100%; max-width: 460px; max-height: 88dvh; overflow-y: auto; border-radius: 20px 20px 0 0; padding: 20px 20px calc(22px + env(safe-area-inset-bottom, 0px)); border: 1px solid var(--line); box-shadow: 0 20px 50px rgba(0,0,0,0.22); }
+    .overlay { position: fixed; inset: 0; background: rgba(15, 23, 32, .52); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); display: flex; align-items: flex-end; justify-content: center; z-index: 20; }
+    .sheet { background: var(--chamber); width: 100%; max-width: 460px; max-height: 88dvh; overflow-y: auto; border-radius: 20px 20px 0 0; padding: 20px 20px calc(22px + env(safe-area-inset-bottom, 0px)); border: 1px solid var(--line); box-shadow: 0 20px 50px rgba(0,0,0,0.22); }
     @media (min-width: 560px) { .overlay { align-items: center; } .sheet { border-radius: 18px; } }
     .sheet-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
     .sheet h2 { margin: 0; font: 700 20px/1.2 var(--font-display); }
@@ -470,8 +576,8 @@
     }
 
     /* ---- Accounts and Teacher Dashboard ---- */
-    .app.wide { max-width: 760px; background: var(--glass); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border: 1px solid var(--glass-border); border-radius: 20px; padding: 20px; box-shadow: 0 20px 50px rgba(15,23,42,0.12); }
-    .boot { position: relative; z-index: 2; max-width: 440px; margin: 48px auto; text-align: center; font-family: var(--font-mono); font-size: 13px; color: var(--muted); }
+    .app.wide { max-width: 760px; background: var(--chamber); border: 1px solid var(--line); border-radius: 20px; padding: 20px; box-shadow: 0 20px 50px rgba(15,23,42,0.12); }
+    .boot { position: relative; z-index: 2; max-width: 440px; margin: 60px auto; text-align: center; font-family: var(--font-mono); font-size: 13px; color: var(--muted); }
     .card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px; display: grid; gap: 12px; }
     .card h2 { margin: 0; font: 700 19px/1.2 var(--font-display); }
     .muted { color: var(--muted); font-size: 13px; margin: 0; }
@@ -520,119 +626,176 @@
 </head>
 <body>
 
-<!-- Interactive Three.js 3D Smog Free Tower Canvas -->
-<canvas id="scene3d" aria-hidden="true"></canvas>
-<div class="orbit-badge" aria-hidden="true">3D TOWER // DRAG SPACE TO ROTATE</div>
-
 <div class="boot" id="boot">INITIALIZING SMOG-FREE STATION…</div>
 
-<!-- Login & Guest Mode View -->
-<div class="app stage-shell" id="viewLogin" hidden>
-  <div class="console-card">
-    <div class="chamber-head">
-      <header class="top">
-        <div class="brand">
-          <h1>
-            <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M8 5L3 3.5l1.5 3L8 7.5V21h8V7.5l3.5-1.5 1.5-3L16 5H8z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
-              <path d="M8 10h8M8 13.5h8M8 17h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-            </svg>
-            Eco Wordle
-          </h1>
-          <p>Purify the air, word by word.</p>
-        </div>
-      </header>
-      <div class="telemetry-bar">
-        <span class="tel-station"><span class="tel-dot"></span>3D-TOWER // UNIT-01</span>
-        <span class="tel-status">AUTH READY</span>
-      </div>
-    </div>
-
-    <form class="card" id="loginForm" autocomplete="on">
-      <h2>Operator Sign In</h2>
-      <label class="field"><span>Username</span><input type="text" id="liUser" autocomplete="username" autocapitalize="none" spellcheck="false" required></label>
-      <label class="field"><span>Password</span><input type="password" id="liPass" autocomplete="current-password" required></label>
-      <p class="err" id="liErr" hidden></p>
-      <button class="btn" type="submit" id="liGo">Sign in</button>
-      <div class="login-links">
-        <button class="linkbtn" type="button" id="liGuest">Play as guest (results stay on this device)</button>
-        <button class="linkbtn sub" type="button" id="toggleSetup">First-time setup: Create teacher account</button>
-      </div>
-    </form>
-
-    <form class="card" id="setupForm" hidden>
-      <h2>Create the teacher account</h2>
-      <p class="muted" id="setupInfo">Create the primary teacher account (password must be at least 6 characters).</p>
-      <div id="setupFields" class="panel">
-        <label class="field"><span>Teacher username</span><input type="text" id="suUser" autocapitalize="none" spellcheck="false" value="teacher"></label>
-        <label class="field"><span>Password (min 6 characters)</span><input type="password" id="suPass" autocomplete="new-password" minlength="6"></label>
-        <p class="err" id="suErr" hidden></p>
-        <button class="btn" type="submit" id="suGo">Create teacher account</button>
-      </div>
-    </form>
+<!-- Login & Guest Mode View (Housed inside the Tower Core) -->
+<div class="app tower-monument" id="viewLogin" hidden>
+  <div class="tower-crown" aria-hidden="true">
+    <div class="crown-wing left"></div>
+    <div class="crown-wing right"></div>
   </div>
+
+  <div class="tower-assembly">
+    <aside class="tower-wing left" aria-hidden="true">
+      <div class="louver-blade"></div>
+      <div class="louver-blade"></div>
+      <div class="louver-blade"></div>
+      <div class="louver-blade"></div>
+      <div class="louver-blade"></div>
+      <div class="louver-blade"></div>
+    </aside>
+
+    <main class="tower-core">
+      <div class="chamber-head">
+        <header class="top">
+          <div class="brand">
+            <h1>
+              <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M8 5L3 3.5l1.5 3L8 7.5V21h8V7.5l3.5-1.5 1.5-3L16 5H8z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                <path d="M8 10h8M8 13.5h8M8 17h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+              Eco Wordle
+            </h1>
+            <p>Purify the air, word by word.</p>
+          </div>
+        </header>
+        <div class="telemetry-bar">
+          <span class="tel-station"><span class="tel-dot"></span>TOWER-CORE // UNIT-01</span>
+          <span class="tel-status">AUTH READY</span>
+        </div>
+      </div>
+
+      <form class="card" id="loginForm" autocomplete="on">
+        <h2>Operator Sign In</h2>
+        <label class="field"><span>Username</span><input type="text" id="liUser" autocomplete="username" autocapitalize="none" spellcheck="false" required></label>
+        <label class="field"><span>Password</span><input type="password" id="liPass" autocomplete="current-password" required></label>
+        <p class="err" id="liErr" hidden></p>
+        <button class="btn" type="submit" id="liGo">Sign in</button>
+        <div class="login-links">
+          <button class="linkbtn" type="button" id="liGuest">Play as guest (results stay on this device)</button>
+          <button class="linkbtn sub" type="button" id="toggleSetup">First-time setup: Create teacher account</button>
+        </div>
+      </form>
+
+      <form class="card" id="setupForm" hidden>
+        <h2>Create the teacher account</h2>
+        <p class="muted" id="setupInfo">Create the primary teacher account (password must be at least 6 characters).</p>
+        <div id="setupFields" class="panel">
+          <label class="field"><span>Teacher username</span><input type="text" id="suUser" autocapitalize="none" spellcheck="false" value="teacher"></label>
+          <label class="field"><span>Password (min 6 characters)</span><input type="password" id="suPass" autocomplete="new-password" minlength="6"></label>
+          <p class="err" id="suErr" hidden></p>
+          <button class="btn" type="submit" id="suGo">Create teacher account</button>
+        </div>
+      </form>
+    </main>
+
+    <aside class="tower-wing right" aria-hidden="true">
+      <div class="louver-blade core-bay"></div>
+      <div class="louver-blade core-bay"></div>
+      <div class="louver-blade"></div>
+      <div class="louver-blade"></div>
+      <div class="louver-blade"></div>
+      <div class="louver-blade"></div>
+    </aside>
+  </div>
+
+  <div class="tower-plinth" aria-hidden="true"></div>
 </div>
 
-<!-- Main Game View (Frosted 3D Tactile Console paired with 3D Tower) -->
-<div class="app stage-shell" id="viewGame" hidden>
-  <div class="console-card">
-    <div class="chamber-head">
-      <header class="top">
-        <div class="brand">
-          <h1>
-            <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M8 5L3 3.5l1.5 3L8 7.5V21h8V7.5l3.5-1.5 1.5-3L16 5H8z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
-              <path d="M8 10h8M8 13.5h8M8 17h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-            </svg>
-            Eco Wordle
-          </h1>
-          <p id="who">Guess the environmental word in 6 tries</p>
-        </div>
-        <nav class="nav">
-          <button class="ghost" id="btnHint" type="button">Hint</button>
-          <button class="ghost" id="btnLog" type="button">Log</button>
-          <button class="ghost" id="btnManage" type="button" hidden>Manage</button>
-          <button class="ghost" id="btnSet" type="button">Settings</button>
-        </nav>
-      </header>
-
-      <div class="telemetry-bar" aria-label="Air purification telemetry">
-        <span class="tel-station"><span class="tel-dot" id="airDot"></span>ION-CORE</span>
-        <div class="tel-meter" id="airMeter" aria-hidden="true">
-          <span class="tel-cell"></span><span class="tel-cell"></span><span class="tel-cell"></span>
-          <span class="tel-cell"></span><span class="tel-cell"></span><span class="tel-cell"></span>
-        </div>
-        <span class="tel-status" id="airStatusText">AQI 142 // STANDBY</span>
-      </div>
-    </div>
-
-    <section class="clue" aria-label="Topic hint">
-      <span class="sensor-led" id="clueLed" aria-hidden="true"></span>
-      <span class="chip" id="cat" hidden></span>
-      <span id="clueText"></span>
-      <span class="modeTag" id="modeTag"></span>
-    </section>
-
-    <div class="boardWrap">
-      <div id="board" aria-label="Guess grid"></div>
-    </div>
-
-    <div id="kb" aria-label="On-screen keyboard"></div>
-
-    <section id="result" hidden>
-      <div class="res-top">
-        <span class="res-label" id="resLabel"></span>
-        <span class="res-word" id="resWord"></span>
-      </div>
-      <div class="res-def"><span id="resDef"></span><span class="chip" id="resCat"></span></div>
-      <p class="res-fact"><b>Environmental Brief // Did you know?</b><span id="resFact"></span></p>
-      <div class="res-actions">
-        <button class="btn" id="btnNext" type="button">Play another</button>
-        <button class="btn alt" id="btnShare" type="button">Copy result</button>
-      </div>
-      <textarea id="shareBox" readonly hidden aria-label="Share text"></textarea>
-    </section>
+<!-- Main Game View (Wordle Embedded Inside the Smog Free Tower) -->
+<div class="app tower-monument" id="viewGame" hidden>
+  <div class="tower-crown" aria-hidden="true">
+    <div class="crown-wing left"></div>
+    <div class="crown-wing right"></div>
   </div>
+
+  <div class="tower-assembly" id="towerHousing">
+    <!-- Left Embedded Architectural Louver Wing -->
+    <aside class="tower-wing left" aria-hidden="true">
+      <div class="louver-blade"></div>
+      <div class="louver-blade"></div>
+      <div class="louver-blade"></div>
+      <div class="louver-blade"></div>
+      <div class="louver-blade"></div>
+      <div class="louver-blade"></div>
+      <div class="louver-blade"></div>
+      <div class="louver-blade"></div>
+    </aside>
+
+    <!-- Central Purification Chamber (Wordle Game Board & Keyboard) -->
+    <main class="tower-core">
+      <div class="chamber-head">
+        <header class="top">
+          <div class="brand">
+            <h1>
+              <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M8 5L3 3.5l1.5 3L8 7.5V21h8V7.5l3.5-1.5 1.5-3L16 5H8z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                <path d="M8 10h8M8 13.5h8M8 17h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+              Eco Wordle
+            </h1>
+            <p id="who">Guess the environmental word in 6 tries</p>
+          </div>
+          <nav class="nav">
+            <button class="ghost" id="btnHint" type="button">Hint</button>
+            <button class="ghost" id="btnLog" type="button">Log</button>
+            <button class="ghost" id="btnManage" type="button" hidden>Manage</button>
+            <button class="ghost" id="btnSet" type="button">Settings</button>
+          </nav>
+        </header>
+
+        <div class="telemetry-bar" aria-label="Air purification telemetry">
+          <span class="tel-station"><span class="tel-dot" id="airDot"></span>ION-CORE</span>
+          <div class="tel-meter" id="airMeter" aria-hidden="true">
+            <span class="tel-cell"></span><span class="tel-cell"></span><span class="tel-cell"></span>
+            <span class="tel-cell"></span><span class="tel-cell"></span><span class="tel-cell"></span>
+          </div>
+          <span class="tel-status" id="airStatusText">AQI 142 // STANDBY</span>
+        </div>
+      </div>
+
+      <section class="clue" aria-label="Topic hint">
+        <span class="sensor-led" id="clueLed" aria-hidden="true"></span>
+        <span class="chip" id="cat" hidden></span>
+        <span id="clueText"></span>
+        <span class="modeTag" id="modeTag"></span>
+      </section>
+
+      <div class="boardWrap">
+        <div id="board" aria-label="Guess grid"></div>
+      </div>
+
+      <div id="kb" aria-label="On-screen keyboard"></div>
+
+      <section id="result" hidden>
+        <div class="res-top">
+          <span class="res-label" id="resLabel"></span>
+          <span class="res-word" id="resWord"></span>
+        </div>
+        <div class="res-def"><span id="resDef"></span><span class="chip" id="resCat"></span></div>
+        <p class="res-fact"><b>Environmental Brief // Did you know?</b><span id="resFact"></span></p>
+        <div class="res-actions">
+          <button class="btn" id="btnNext" type="button">Play another</button>
+          <button class="btn alt" id="btnShare" type="button">Copy result</button>
+        </div>
+        <textarea id="shareBox" readonly hidden aria-label="Share text"></textarea>
+      </section>
+    </main>
+
+    <!-- Right Embedded Architectural Louver Wing (with Upper Ionization Core Bay) -->
+    <aside class="tower-wing right" aria-hidden="true">
+      <div class="louver-blade core-bay"></div>
+      <div class="louver-blade core-bay"></div>
+      <div class="louver-blade"></div>
+      <div class="louver-blade"></div>
+      <div class="louver-blade"></div>
+      <div class="louver-blade"></div>
+      <div class="louver-blade"></div>
+      <div class="louver-blade"></div>
+    </aside>
+  </div>
+
+  <div class="tower-plinth" aria-hidden="true"></div>
 </div>
 
 <div id="msg" role="status" aria-live="polite" hidden></div>
@@ -798,333 +961,6 @@
   var reduced = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
   var STATE_LABEL = { hit: 'correct spot', near: 'in the word, wrong spot', miss: 'not in the word' };
 
-  /* --- Interactive Three.js 3D Smog Free Tower Scene --- */
-  var Tower3D = (function () {
-    var canvas = $('scene3d');
-    if (!canvas || !window.THREE) {
-      return { setPurification: function () {}, syncTheme: function () {}, start: function () {} };
-    }
-
-    var scene, camera, renderer, towerGroup, leftWing, rightWing, coreGlowMat, coreRingMat, slatMat, frameMat, glassMat;
-    var particles, particleData = [], dirLight, hemiLight;
-    var targetRotY = 0.42, currentRotY = 0.42, targetRotX = 0.04, currentRotX = 0.04;
-    var isDragging = false, prevX = 0, prevY = 0;
-    var targetPurity = 0.15, currentPurity = 0.15;
-    var started = false;
-
-    function isDark() {
-      var dt = document.documentElement.getAttribute('data-theme');
-      if (dt === 'dark') return true;
-      if (dt === 'light') return false;
-      return !!(window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches);
-    }
-
-    function init() {
-      scene = new THREE.Scene();
-      scene.fog = new THREE.FogExp2(0xdfe6ec, 0.042);
-
-      camera = new THREE.PerspectiveCamera(36, window.innerWidth / window.innerHeight, 0.1, 100);
-      camera.position.set(0, 3.8, 12.2);
-      camera.lookAt(0, 3.4, 0);
-
-      renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: false });
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      renderer.outputEncoding = THREE.sRGBEncoding;
-
-      /* Soft studio & sky lighting (low glare, zero harsh contrast) */
-      hemiLight = new THREE.HemisphereLight(0xf8fafc, 0x94a3b8, 0.95);
-      scene.add(hemiLight);
-
-      dirLight = new THREE.DirectionalLight(0xffffff, 0.72);
-      dirLight.position.set(6, 12, 8);
-      scene.add(dirLight);
-
-      var fillLight = new THREE.DirectionalLight(0xcbd5e1, 0.35);
-      fillLight.position.set(-7, 5, -5);
-      scene.add(fillLight);
-
-      /* Materials */
-      slatMat = new THREE.MeshStandardMaterial({ color: 0xe6ecf2, roughness: 0.48, metalness: 0.22 });
-      frameMat = new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.55, metalness: 0.35 });
-      glassMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, roughness: 0.2, metalness: 0.1, transparent: true, opacity: 0.35 });
-      coreGlowMat = new THREE.MeshBasicMaterial({ color: 0x0d9488, transparent: true, opacity: 0.35 });
-      coreRingMat = new THREE.MeshStandardMaterial({ color: 0x0f766e, emissive: 0x0d9488, emissiveIntensity: 0.35, roughness: 0.3 });
-
-      /* Ground Plane & Distant Minimalist City Blocks (echoing the reference photo) */
-      var groundGeo = new THREE.CircleGeometry(28, 48);
-      var groundMat = new THREE.MeshStandardMaterial({ color: 0xd3dce4, roughness: 0.9, metalness: 0.0 });
-      var ground = new THREE.Mesh(groundGeo, groundMat);
-      ground.rotation.x = -Math.PI / 2;
-      ground.position.y = 0;
-      scene.add(ground);
-
-      var cityGroup = new THREE.Group();
-      var bldgMat = new THREE.MeshStandardMaterial({ color: 0xc2cdd8, roughness: 0.85, metalness: 0.05 });
-      var blocks = [
-        { x: -7.5, z: -9.5, w: 1.9, h: 3.4, d: 1.8 },
-        { x: -5.1, z: -10.2, w: 1.9, h: 3.6, d: 1.8 },
-        { x: -2.7, z: -10.8, w: 1.9, h: 3.5, d: 1.8 },
-        { x: 5.8, z: -9.0, w: 4.2, h: 2.3, d: 2.6 }
-      ];
-      blocks.forEach(function (b) {
-        var mesh = new THREE.Mesh(new THREE.BoxGeometry(b.w, b.h, b.d), bldgMat);
-        mesh.position.set(b.x, b.h / 2, b.z);
-        cityGroup.add(mesh);
-      });
-      scene.add(cityGroup);
-
-      /* Main 3D Smog Free Tower Assembly */
-      towerGroup = new THREE.Group();
-      scene.add(towerGroup);
-
-      /* Base Plinth */
-      var plinth = new THREE.Mesh(new THREE.BoxGeometry(2.35, 0.28, 2.35), frameMat);
-      plinth.position.y = 0.14;
-      towerGroup.add(plinth);
-
-      /* 4 Corner Structural Columns */
-      var colGeo = new THREE.BoxGeometry(0.11, 6.4, 0.11);
-      [[-0.96, -0.96], [0.96, -0.96], [-0.96, 0.96], [0.96, 0.96]].forEach(function (pt) {
-        var col = new THREE.Mesh(colGeo, frameMat);
-        col.position.set(pt[0], 3.45, pt[1]);
-        towerGroup.add(col);
-      });
-
-      /* Central Ionization Core Column (visible inside the open upper bay!) */
-      var innerCore = new THREE.Mesh(new THREE.CylinderGeometry(0.46, 0.46, 5.9, 24), frameMat);
-      innerCore.position.y = 3.3;
-      towerGroup.add(innerCore);
-
-      var glowCore = new THREE.Mesh(new THREE.CylinderGeometry(0.51, 0.51, 5.6, 24), coreGlowMat);
-      glowCore.position.y = 3.3;
-      towerGroup.add(glowCore);
-
-      /* Glowing Ionization Rings inside the Upper Cutaway Window */
-      for (var r = 0; r < 4; r++) {
-        var ring = new THREE.Mesh(new THREE.TorusGeometry(0.54, 0.035, 10, 28), coreRingMat);
-        ring.rotation.x = Math.PI / 2;
-        ring.position.y = 4.5 + r * 0.45;
-        towerGroup.add(ring);
-      }
-
-      /* Horizontal Louver Slats (with open upper-right inspection bay matching the photo!) */
-      var numLevels = 24;
-      var startY = 0.42;
-      var stepY = 0.255;
-      for (var lv = 0; lv < numLevels; lv++) {
-        var y = startY + lv * stepY;
-        var isCutawayLevel = (lv >= 16 && lv <= 22);
-
-        /* Front slat (+Z) */
-        if (!isCutawayLevel) {
-          var sFront = new THREE.Mesh(new THREE.BoxGeometry(2.14, 0.085, 0.16), slatMat);
-          sFront.position.set(0, y, 1.02);
-          sFront.rotation.x = 0.26;
-          towerGroup.add(sFront);
-        } else {
-          /* Left half only on cutaway levels, exposing the right ionization core */
-          var sFrontHalf = new THREE.Mesh(new THREE.BoxGeometry(1.02, 0.085, 0.16), slatMat);
-          sFrontHalf.position.set(-0.56, y, 1.02);
-          sFrontHalf.rotation.x = 0.26;
-          towerGroup.add(sFrontHalf);
-        }
-
-        /* Back slat (-Z) */
-        var sBack = new THREE.Mesh(new THREE.BoxGeometry(2.14, 0.085, 0.16), slatMat);
-        sBack.position.set(0, y, -1.02);
-        sBack.rotation.x = -0.26;
-        towerGroup.add(sBack);
-
-        /* Left slat (-X) */
-        var sLeft = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.085, 2.14), slatMat);
-        sLeft.position.set(-1.02, y, 0);
-        sLeft.rotation.z = -0.26;
-        towerGroup.add(sLeft);
-
-        /* Right slat (+X) - open on cutaway levels */
-        if (!isCutawayLevel) {
-          var sRight = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.085, 2.14), slatMat);
-          sRight.position.set(1.02, y, 0);
-          sRight.rotation.z = 0.26;
-          towerGroup.add(sRight);
-        }
-      }
-
-      /* Top Crown Cap */
-      var cap = new THREE.Mesh(new THREE.BoxGeometry(2.12, 0.14, 2.12), frameMat);
-      cap.position.y = 6.62;
-      towerGroup.add(cap);
-
-      /* Asymmetric Articulated Hinged Intake Wings (Hallmark of Daan Roosegaarde's Tower) */
-      leftWing = new THREE.Group();
-      leftWing.position.set(-1.02, 6.25, 0);
-      for (var lw = 0; lw < 6; lw++) {
-        var bladeL = new THREE.Mesh(new THREE.BoxGeometry(1.15, 0.06, 1.85), slatMat);
-        bladeL.position.set(-0.55, lw * 0.14, 0);
-        bladeL.rotation.z = 0.22;
-        leftWing.add(bladeL);
-      }
-      leftWing.rotation.z = 0.42;
-      towerGroup.add(leftWing);
-
-      rightWing = new THREE.Group();
-      rightWing.position.set(1.02, 6.15, 0.15);
-      for (var rw = 0; rw < 7; rw++) {
-        var bladeR = new THREE.Mesh(new THREE.BoxGeometry(1.25, 0.065, 1.95), slatMat);
-        bladeR.position.set(0.58, rw * 0.15, 0);
-        bladeR.rotation.z = -0.25;
-        rightWing.add(bladeR);
-      }
-      rightWing.rotation.z = -0.36;
-      towerGroup.add(rightWing);
-
-      /* Atmospheric Airflow & Dust Particles */
-      var pCount = 130;
-      var pGeo = new THREE.BufferGeometry();
-      var pPos = new Float32Array(pCount * 3);
-      var pCol = new Float32Array(pCount * 3);
-      for (var i = 0; i < pCount; i++) {
-        var angle = Math.random() * Math.PI * 2;
-        var radius = 1.4 + Math.random() * 4.5;
-        var py = Math.random() * 7.8;
-        pPos[i * 3] = Math.cos(angle) * radius;
-        pPos[i * 3 + 1] = py;
-        pPos[i * 3 + 2] = Math.sin(angle) * radius;
-        particleData.push({ angle: angle, radius: radius, speed: 0.004 + Math.random() * 0.007, ySpeed: 0.005 + Math.random() * 0.008 });
-        pCol[i * 3] = 0.55; pCol[i * 3 + 1] = 0.62; pCol[i * 3 + 2] = 0.68;
-      }
-      pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
-      pGeo.setAttribute('color', new THREE.BufferAttribute(pCol, 3));
-      var pMat = new THREE.PointsMaterial({ size: 0.09, vertexColors: true, transparent: true, opacity: 0.72 });
-      particles = new THREE.Points(pGeo, pMat);
-      scene.add(particles);
-
-      /* Pointer Drag Orbit Controls on Canvas */
-      canvas.addEventListener('pointerdown', function (e) {
-        isDragging = true;
-        prevX = e.clientX;
-        prevY = e.clientY;
-      });
-      window.addEventListener('pointermove', function (e) {
-        if (!isDragging) return;
-        var dx = e.clientX - prevX;
-        var dy = e.clientY - prevY;
-        prevX = e.clientX;
-        prevY = e.clientY;
-        targetRotY += dx * 0.0075;
-        targetRotX = Math.max(-0.18, Math.min(0.28, targetRotX + dy * 0.004));
-      });
-      window.addEventListener('pointerup', function () { isDragging = false; });
-
-      window.addEventListener('resize', onResize);
-      onResize();
-      syncTheme();
-    }
-
-    function onResize() {
-      if (!renderer || !camera) return;
-      var w = window.innerWidth, h = window.innerHeight;
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
-      renderer.setSize(w, h);
-
-      /* Position 3D Tower harmoniously beside the console on desktop, or centered behind on mobile */
-      if (towerGroup) {
-        if (w >= 860) {
-          towerGroup.position.set(-2.35, 0, 0);
-          towerGroup.scale.setScalar(1.0);
-        } else {
-          towerGroup.position.set(0, 0.3, -1.6);
-          towerGroup.scale.setScalar(0.88);
-        }
-      }
-    }
-
-    function syncTheme() {
-      if (!scene) return;
-      var dark = isDark();
-      var bgHex = dark ? 0x10171e : 0xdfe6ec;
-      scene.background = new THREE.Color(bgHex);
-      scene.fog.color.setHex(bgHex);
-      slatMat.color.setHex(dark ? 0x334155 : 0xe6ecf2);
-      frameMat.color.setHex(dark ? 0x1e293b : 0x475569);
-      hemiLight.intensity = dark ? 0.65 : 0.95;
-      dirLight.intensity = dark ? 0.55 : 0.72;
-    }
-
-    function setPurification(ratio) {
-      targetPurity = Math.max(0.1, Math.min(1.0, ratio));
-      if (!scene) return;
-      scene.fog.density = 0.046 - targetPurity * 0.022;
-    }
-
-    function animate() {
-      requestAnimationFrame(animate);
-      if (!renderer || !scene || !camera) return;
-
-      currentPurity += (targetPurity - currentPurity) * 0.04;
-      if (!isDragging && !reduced) {
-        targetRotY += 0.0012; /* Gentle continuous architectural showcase rotation */
-      }
-      currentRotY += (targetRotY - currentRotY) * 0.08;
-      currentRotX += (targetRotX - currentRotX) * 0.08;
-
-      if (towerGroup) {
-        towerGroup.rotation.y = currentRotY;
-        towerGroup.rotation.x = currentRotX;
-      }
-
-      /* Articulated wings breathe and open wider as air gets purified */
-      var t = performance.now() * 0.0012;
-      var breath = reduced ? 0 : Math.sin(t) * 0.03;
-      if (leftWing) leftWing.rotation.z = 0.34 + currentPurity * 0.24 + breath;
-      if (rightWing) rightWing.rotation.z = -0.28 - currentPurity * 0.24 - breath;
-
-      /* Ionization core luminescence scales with purification */
-      if (coreGlowMat) coreGlowMat.opacity = 0.18 + currentPurity * 0.52;
-      if (coreRingMat) coreRingMat.emissiveIntensity = 0.2 + currentPurity * 0.95;
-
-      /* Airflow particles drawn into intake and purified */
-      if (particles && !reduced) {
-        var pos = particles.geometry.attributes.position.array;
-        var col = particles.geometry.attributes.color.array;
-        var tx = towerGroup ? towerGroup.position.x : 0;
-        for (var i = 0; i < particleData.length; i++) {
-          var pd = particleData[i];
-          pd.angle += pd.speed;
-          var y = pos[i * 3 + 1] + pd.ySpeed * (0.7 + currentPurity * 0.8);
-          if (y > 7.8) y = 0.2;
-          var r = pd.radius * (1 - (y / 11) * 0.32);
-          pos[i * 3] = tx + Math.cos(pd.angle) * r;
-          pos[i * 3 + 1] = y;
-          pos[i * 3 + 2] = Math.sin(pd.angle) * r;
-
-          /* Blend color from smoggy slate to clean-air turquoise */
-          var cleanMix = Math.min(1, currentPurity * 0.85 + (y / 7.8) * 0.35);
-          col[i * 3] = 0.58 * (1 - cleanMix) + 0.18 * cleanMix;
-          col[i * 3 + 1] = 0.63 * (1 - cleanMix) + 0.83 * cleanMix;
-          col[i * 3 + 2] = 0.69 * (1 - cleanMix) + 0.75 * cleanMix;
-        }
-        particles.geometry.attributes.position.needsUpdate = true;
-        particles.geometry.attributes.color.needsUpdate = true;
-      }
-
-      renderer.render(scene, camera);
-    }
-
-    return {
-      start: function () {
-        if (started) return;
-        started = true;
-        init();
-        animate();
-      },
-      setPurification: setPurification,
-      syncTheme: syncTheme
-    };
-  })();
-
   /* --- Firebase Initialization --- */
   var DB = null, AUTH = null, canEdit = true, noUsers = false;
 
@@ -1151,7 +987,7 @@
   /* Helper to prevent network calls from hanging indefinitely */
   function withTimeout(promise, ms) {
     return new Promise(function (resolve, reject) {
-      var timer = setTimeout(function () { reject(new Error('timeout')); }, ms || 3500);
+      var timer = setTimeout(function () { reject(new Error('timeout')); }, ms || 3000);
       promise.then(
         function (val) { clearTimeout(timer); resolve(val); },
         function (err) { clearTimeout(timer); reject(err); }
@@ -1204,7 +1040,7 @@
     stats = defaultStats(); learned = [];
     if (account && DB) {
       try {
-        var s = await withTimeout(DB.doc('progress/' + account.username).get(), 3500);
+        var s = await withTimeout(DB.doc('progress/' + account.username).get(), 3000);
         if (s.exists) { var d = clone(s.data()); stats = Object.assign(defaultStats(), d.stats || {}); learned = d.learned || []; }
       } catch (e) {}
     } else {
@@ -1219,7 +1055,7 @@
   }
   async function loadCustomWords() {
     if (!DB) return;
-    var snap = await withTimeout(DB.collection('words').get(), 3500);
+    var snap = await withTimeout(DB.collection('words').get(), 3000);
     custom = {};
     snap.docs.forEach(function (d) {
       var x = d.data(), w = String(x.w || d.id).toUpperCase();
@@ -1231,7 +1067,7 @@
   }
   async function loadSchedule() {
     if (!DB) return;
-    var snap = await withTimeout(DB.collection('schedule').get(), 3500);
+    var snap = await withTimeout(DB.collection('schedule').get(), 3000);
     schedule = {};
     snap.docs.forEach(function (d) { var x = d.data(); if (x && x.word) schedule[d.id] = String(x.word).toUpperCase(); });
   }
@@ -1273,7 +1109,7 @@
     if (mode === 'daily') {
       if (account && DB) {
         try {
-          var s = await withTimeout(DB.doc('results/' + today + '/entries/' + account.username).get(), 3500);
+          var s = await withTimeout(DB.doc('results/' + today + '/entries/' + account.username).get(), 3000);
           if (s.exists) {
             var d = s.data();
             if (byWord[d.answer]) return { mode: 'daily', answer: d.answer, guesses: (d.guesses || []).slice(), status: d.status || 'play', hint: !!d.hint, date: today };
@@ -1348,8 +1184,13 @@
     updateTelemetry(Object.keys(hitCols).length);
   }
   function updateTelemetry(hitCount) {
-    var purity = game.status === 'won' ? 1.0 : Math.min(0.9, 0.12 + hitCount * 0.16);
-    Tower3D.setPurification(purity);
+    var housing = $('towerHousing');
+    if (housing) {
+      housing.classList.toggle('purified', game.status === 'won');
+      housing.classList.toggle('active-glow', hitCount >= 2 || game.guesses.length > 0);
+    }
+    document.body.classList.toggle('air-purified', game.status === 'won' || hitCount >= 3);
+
     var dot = $('airDot'), st = $('airStatusText'), meter = $('airMeter');
     if (dot) dot.classList.toggle('clean', game.status === 'won' || hitCount >= 3);
     if (st) {
@@ -1535,13 +1376,12 @@
 
       await AUTH.signInWithEmailAndPassword(email, p);
 
-      var s = await withTimeout(DB.doc('users/' + u).get(), 4000);
+      var s = await withTimeout(DB.doc('users/' + u).get(), 3500);
       if (s.exists) {
         var d = s.data();
         account = { username: u, role: d.role === 'admin' ? 'admin' : 'student' };
       } else {
-        /* If Auth succeeded but Firestore profile wasn't saved yet, check if users collection is empty */
-        var anyUser = await withTimeout(DB.collection('users').limit(1).get(), 4000);
+        var anyUser = await withTimeout(DB.collection('users').limit(1).get(), 3500);
         var inferredRole = anyUser.empty ? 'admin' : 'student';
         await DB.doc('users/' + u).set({ username: u, role: inferredRole, updatedAt: Date.now() });
         account = { username: u, role: inferredRole };
@@ -1642,9 +1482,11 @@
     $('setTopic').checked = !!settings.topic; $('setCb').checked = !!settings.cb;
     $('acctRow').hidden = !AUTH;
     $('acctText').textContent = account ? 'Signed in as ' + account.username : 'Playing as a guest. Sign in to save results to the class record.';
+    $('btnAcct').textContent = account ? 'Log out' : 'Sign in';
+    $('about').textContent = WORDS.length + ' environmental words across energy, climate, ocean, pollution, ecology, water, farming, land and recycling. Every answer comes with a short definition and a fact. Guesses are checked against a built-in list of about 12,600 five-letter English words.';
+  }
   function applySettings() {
     document.documentElement.setAttribute('data-cb', settings.cb ? '1' : '0');
-    Tower3D.syncTheme();
   }
 
   /* ---------- Teacher Dashboard ---------- */
@@ -1652,7 +1494,7 @@
   function showAdmin() {
     showView('viewAdmin');
     $('admWho').textContent = 'Signed in as ' + account.username;
-    $('admNote').hidden = canEdit;
+    $('admNote').hidden = !canEdit ? false : true;
     adm.date = adm.date || dateKey();
     renderAdmin();
   }
@@ -1666,16 +1508,19 @@
   }
   async function getUsers(force) {
     if (adm.users && !force) return adm.users;
-    var snap = await DB.collection('users').get();
-    adm.users = snap.docs.map(function (d) { var x = d.data(); return { username: d.id, role: x.role === 'admin' ? 'admin' : 'student' }; }).sort(function (a, b) { return a.username < b.username ? -1 : 1; });
+    var snap = await withTimeout(DB.collection('users').get(), 4000);
+    adm.users = snap.docs.map(function (d) {
+      var x = d.data();
+      return { username: d.id, role: x.role === 'admin' ? 'admin' : 'student' };
+    }).sort(function (a, b) { return a.username < b.username ? -1 : 1; });
     return adm.users;
   }
-  function saveFail(err) { toast('Could not save. Check Firestore database rules.'); console.error(err); }
+  function saveFail() { toast('Could not save. Check your Firestore security rules.'); }
 
   function renderSchedule(body) {
     var today = dateKey();
     body.appendChild(h('p', { class: 'muted', text: 'Choose the daily word for each date. “Auto” uses the built-in rotation. Changing today’s word does not affect students who already started.' }));
-    for (var i = 0; i < 14; i++) (function (key, idx) {
+    for (var i = 0; i < 14; i++) (function (key, i) {
       var sel = h('select', { 'aria-label': 'Word for ' + fmtDate(key) });
       sel.appendChild(h('option', { value: '', text: 'Auto (' + defaultWord(key) + ')' }));
       WORDS.forEach(function (e) { sel.appendChild(h('option', { value: e.w, text: e.w + '  ·  ' + e.c })); });
@@ -1686,10 +1531,10 @@
           if (v) { await DB.doc('schedule/' + key).set({ word: v, by: account.username, updatedAt: Date.now() }); schedule[key] = v; }
           else { await DB.doc('schedule/' + key).delete(); delete schedule[key]; }
           toast(v ? fmtDate(key) + ': ' + v : fmtDate(key) + ': auto');
-        } catch (e) { sel.value = prev; saveFail(e); }
+        } catch (e) { sel.value = prev; saveFail(); }
       });
       body.appendChild(h('div', { class: 'srow' }, [
-        h('div', { class: 'sdate' }, [h('b', { text: fmtDate(key) }), idx === 0 ? h('span', { class: 'chip', text: 'Today' }) : null]), sel
+        h('div', { class: 'sdate' }, [h('b', { text: fmtDate(key) }), i === 0 ? h('span', { class: 'chip', text: 'Today' }) : null]), sel
       ]));
     })(addDays(today, i), i);
   }
@@ -1698,13 +1543,16 @@
     var key = adm.date;
     var dateIn = h('input', { type: 'date', id: 'resDate', value: key, 'aria-label': 'Date' });
     dateIn.addEventListener('change', function () { if (/^\d{4}-\d{2}-\d{2}$/.test(dateIn.value)) { adm.date = dateIn.value; renderAdmin(); } });
-    body.appendChild(h('div', { class: 'inline' }, [h('label', { class: 'field', style: 'max-width:200px' }, [h('span', { text: 'Date' }), dateIn]), h('button', { class: 'ghost', type: 'button', text: 'Refresh', onclick: function () { renderAdmin(); } })]));
+    body.appendChild(h('div', { class: 'inline' }, [
+      h('label', { class: 'field', style: 'max-width:200px' }, [h('span', { text: 'Date' }), dateIn]),
+      h('button', { class: 'ghost', type: 'button', text: 'Refresh', onclick: function () { renderAdmin(); } })
+    ]));
     var out = h('div', { class: 'panel' }, [h('p', { class: 'muted', text: 'Loading…' })]);
     body.appendChild(out);
     var users, entries = {};
     try {
       users = await getUsers(true);
-      var snap = await DB.collection('results/' + key + '/entries').get();
+      var snap = await withTimeout(DB.collection('results/' + key + '/entries').get(), 4000);
       snap.docs.forEach(function (d) { entries[d.id] = d.data(); });
     } catch (e) { out.textContent = 'Could not load results.'; return; }
     if (adm.tab !== 'results' || adm.date !== key) return;
@@ -1757,7 +1605,7 @@
       try {
         await DB.doc('words/' + w).set({ w: w, c: c, d: d, f: f, by: account.username, updatedAt: Date.now() });
         custom[w] = { w: w, c: c, d: d, f: f }; rebuildWords(); renderAdmin(); toast(w + ' added');
-      } catch (e) { add.disabled = false; saveFail(e); }
+      } catch (e) { add.disabled = false; saveFail(); }
     });
     body.appendChild(h('div', { class: 'card' }, [
       h('h2', { text: 'Add a word' }),
@@ -1775,13 +1623,17 @@
       var e = custom[w], del = h('button', { class: 'ghost small', type: 'button', text: 'Delete' });
       del.addEventListener('click', async function () {
         if (del.dataset.arm !== '1') { del.dataset.arm = '1'; del.textContent = 'Sure?'; del.classList.add('danger'); return; }
-        try { await DB.doc('words/' + w).delete(); delete custom[w]; rebuildWords(); renderAdmin(); toast(w + ' deleted'); } catch (err) { saveFail(err); }
+        try { await DB.doc('words/' + w).delete(); delete custom[w]; rebuildWords(); renderAdmin(); toast(w + ' deleted'); } catch (err) { saveFail(); }
       });
-      list.appendChild(h('div', { class: 'inline', style: 'justify-content:space-between' }, [h('div', null, [h('b', { text: w + ' ' }), h('span', { class: 'muted', text: e.c + (e.d ? ' · ' + e.d : '') })]), del]));
+      list.appendChild(h('div', { class: 'inline', style: 'justify-content:space-between' }, [
+        h('div', null, [h('b', { text: w + ' ' }), h('span', { class: 'muted', text: e.c + (e.d ? ' · ' + e.d : '') })]), del
+      ]));
     });
     body.appendChild(list);
-    var det = h('details', { class: 'card' }, [h('summary', { text: 'Built-in words (' + NB + ')' }),
-      h('div', { class: 'wlist' }, BUILTIN.map(function (e) { return h('span', { text: e.w + ' · ' + e.c }); }))]);
+    var det = h('details', { class: 'card' }, [
+      h('summary', { text: 'Built-in words (' + NB + ')' }),
+      h('div', { class: 'wlist' }, BUILTIN.map(function (e) { return h('span', { text: e.w + ' · ' + e.c }); }))
+    ]);
     body.appendChild(det);
   }
 
@@ -1791,20 +1643,20 @@
     var users, prog = {};
     try {
       users = await getUsers(true);
-      var snap = await DB.collection('progress').get();
+      var snap = await withTimeout(DB.collection('progress').get(), 4000);
       snap.docs.forEach(function (d) { prog[d.id] = d.data().stats || {}; });
     } catch (e) { out.textContent = 'Could not load accounts.'; return; }
     if (adm.tab !== 'students') return;
     out.innerHTML = '';
     var nu = h('input', { type: 'text', id: 'nuName', maxlength: '20', autocapitalize: 'none', spellcheck: 'false' });
-    var np = h('input', { type: 'text', id: 'nuPass', maxlength: '40', autocomplete: 'off', placeholder: 'Min 6 characters' });
+    var np = h('input', { type: 'text', id: 'nuPass', maxlength: '40', autocomplete: 'off', placeholder: 'Min 6 chars' });
     var nr = h('select', { id: 'nuRole' }, [h('option', { value: 'student', text: 'Student' }), h('option', { value: 'admin', text: 'Teacher' })]);
     var msg = h('p', { class: 'err', hidden: true });
     var addBtn = h('button', { class: 'btn', type: 'button', text: 'Add account' });
     addBtn.addEventListener('click', async function () {
       var u = cleanName(nu.value), p = np.value;
       msg.hidden = true; msg.className = 'err';
-      var bad = !NAME_OK.test(u) ? 'Username: 2 to 20 letters, numbers, - or _.' : p.length < 6 ? 'Firebase requires at least 6 characters for passwords.' : users.some(function (x) { return x.username === u; }) ? 'That username is taken.' : '';
+      var bad = !NAME_OK.test(u) ? 'Username: 2 to 20 letters, numbers, - or _.' : p.length < 6 ? 'Firebase requires passwords to be at least 6 characters.' : users.some(function (x) { return x.username === u; }) ? 'That username is taken.' : '';
       if (bad) { msg.textContent = bad; msg.hidden = false; return; }
       addBtn.disabled = true;
       try {
@@ -1813,12 +1665,8 @@
         renderAdmin();
       } catch (e) {
         addBtn.disabled = false;
-        if (e && e.code === 'auth/email-already-in-use') {
-          msg.textContent = 'That username already exists in Firebase Authentication.';
-          msg.hidden = false;
-        } else {
-          saveFail(e);
-        }
+        msg.textContent = (e && e.code === 'auth/email-already-in-use') ? 'Username already exists in Firebase.' : 'Could not create account.';
+        msg.hidden = false;
       }
     });
     out.appendChild(h('div', { class: 'card' }, [
@@ -1835,7 +1683,7 @@
       if (account && u.username === account.username) del.disabled = true;
       del.addEventListener('click', async function () {
         if (del.dataset.arm !== '1') { del.dataset.arm = '1'; del.textContent = 'Sure?'; del.classList.add('danger'); return; }
-        try { await DB.doc('users/' + u.username).delete(); toast(u.username + ' removed from roster'); renderAdmin(); } catch (e) { saveFail(e); }
+        try { await DB.doc('users/' + u.username).delete(); toast(u.username + ' removed from roster'); renderAdmin(); } catch (e) { saveFail(); }
       });
       return h('tr', null, [
         h('td', { text: u.username }),
@@ -1848,7 +1696,7 @@
     out.appendChild(h('div', { class: 'tblwrap' }, [h('table', null, [
       h('thead', null, [h('tr', null, [h('th', { text: 'Username' }), h('th', { text: 'Role' }), h('th', { class: 'num', text: 'Played' }), h('th', { class: 'num', text: 'Wins' }), h('th', { text: 'Action' })])]),
       h('tbody', null, trs)])]));
-    out.appendChild(h('p', { class: 'muted', text: 'Accounts are managed via Firebase Authentication. To reset a forgotten password or permanently purge credentials, manage the user inside your Firebase Console under Authentication > Users.' }));
+    out.appendChild(h('p', { class: 'muted', text: 'Authentication is managed by Firebase Auth. Removing a user hides them from the class roster while preserving past results.' }));
   }
 
   /* ---------- Event Wiring ---------- */
@@ -1869,9 +1717,12 @@
   $('btnShare').addEventListener('click', function () {
     var text = shareText();
     var fallback = function () {
-      var box = $('shareBox'); box.value = text; box.hidden = false; box.focus(); box.select();
-      try { if (document.execCommand('copy')) { toast('Result copied'); return; } } catch (e) {}
-      toast('Copy the text below');
+      var box = $('shareBox');
+      box.value = text;
+      box.hidden = false;
+      box.focus();
+      box.select();
+      try { document.execCommand('copy'); toast('Result copied'); } catch (e) { toast('Copy the text below'); }
     };
     try {
       if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(function () { toast('Result copied'); }, fallback);
@@ -1891,18 +1742,36 @@
     else if (/^[a-zA-Z]$/.test(e.key)) press(e.key.toLowerCase());
   });
 
-  /* ---------- Boot & Auth State Recovery ---------- */
+  /* ---------- Boot Sequence ---------- */
   function getAuthState() {
-    if (!AUTH) return Promise.resolve(null);
-    return withTimeout(new Promise(function (resolve) {
+    return new Promise(function (resolve) {
+      if (!AUTH) return resolve(null);
+      var settled = false;
+      var timer = setTimeout(function () {
+        if (!settled) { settled = true; resolve(AUTH.currentUser || null); }
+      }, 2500);
       var unsub = AUTH.onAuthStateChanged(function (user) {
-        unsub();
-        resolve(user);
+        if (!settled) {
+          settled = true;
+          clearTimeout(timer);
+          try { unsub(); } catch (e) {}
+          resolve(user);
+        }
       });
-    }), 3500).catch(function () { return null; });
+    });
   }
 
   async function boot() {
+    if (DB) {
+      try {
+        await Promise.all([loadCustomWords(), loadSchedule()]);
+        var snap = await withTimeout(DB.collection('users').limit(1).get(), 3000);
+        noUsers = snap.empty;
+      } catch (e) {
+        console.warn("Firestore initial check skipped or timed out:", e);
+      }
+    }
+
     if (!DB || !AUTH) {
       account = null;
       await enterGame();
@@ -1911,50 +1780,31 @@
 
     var saved = store.get('ew_login', null);
 
-    /* Respect explicit guest mode selection across reloads */
+    /* Explicit guest mode preserved across refreshes */
     if (saved === 'guest') {
       account = null;
       await enterGame();
       return;
     }
 
-    /* Check if user already has an active Firebase Auth session */
+    /* Check active Firebase Auth session */
     var user = await getAuthState();
     if (user && user.email) {
       var username = user.email.split('@')[0];
       try {
-        var s = await withTimeout(DB.doc('users/' + username).get(), 3500);
+        var s = await withTimeout(DB.doc('users/' + username).get(), 3000);
         if (s.exists) {
           account = { username: username, role: s.data().role === 'admin' ? 'admin' : 'student' };
-        } else {
-          account = { username: username, role: 'student' };
+          await enterGame();
+          return;
         }
-        store.set('ew_login', username);
-        await enterGame();
-        return;
-      } catch (e) {
-        account = { username: username, role: 'student' };
-        await enterGame();
-        return;
-      }
-    }
-
-    /* Not signed in yet: check if users collection is empty (only succeeds if Firestore allows unauthenticated reads) */
-    try {
-      var snap = await withTimeout(DB.collection('users').limit(1).get(), 2500);
-      noUsers = snap.empty;
-    } catch (e) {
-      noUsers = false;
+      } catch (e) {}
+      account = { username: username, role: 'student' };
+      await enterGame();
+      return;
     }
 
     showLogin();
-  }
-
-  window.addEventListener('load', function () {
-    Tower3D.start();
-  });
-  if (document.readyState === 'complete') {
-    Tower3D.start();
   }
 
   boot();
