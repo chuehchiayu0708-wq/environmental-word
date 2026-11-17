@@ -1026,6 +1026,7 @@
       firebase.initializeApp(firebaseConfig);
       DB = firebase.firestore();
       AUTH = firebase.auth();
+      AUTH.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(function () {});
     }
   } catch (initErr) {
     console.warn("Firebase initialization warning:", initErr);
@@ -1417,30 +1418,46 @@
     showError('liErr', '');
     $('liGo').disabled = true;
     try {
-      if (!AUTH || !DB) throw new Error('Firebase service is unavailable.');
+      if (!AUTH) throw new Error('Firebase Auth service is unavailable.');
       if (!NAME_OK.test(u)) throw new Error('Username must be 2–20 lowercase letters, numbers, - or _.');
       var email = u + '@ecowordle.local';
 
+      /* 1. Verify password directly with Firebase Auth */
       await AUTH.signInWithEmailAndPassword(email, p);
 
-      var s = await withTimeout(DB.doc('users/' + u).get(), 3500);
-      if (s.exists) {
-        var d = s.data();
-        account = { username: u, role: d.role === 'admin' ? 'admin' : 'student' };
-      } else {
-        var anyUser = await withTimeout(DB.collection('users').limit(1).get(), 3500);
-        var inferredRole = anyUser.empty ? 'admin' : 'student';
-        await DB.doc('users/' + u).set({ username: u, role: inferredRole, updatedAt: Date.now() });
-        account = { username: u, role: inferredRole };
+      /* 2. Load role from Firestore with local cache fallback so DB latency never blocks login */
+      var role = store.get('ew_role_' + u, u === 'teacher' ? 'admin' : 'student');
+      if (DB) {
+        try {
+          var s = await withTimeout(DB.doc('users/' + u).get(), 4500);
+          if (s.exists) {
+            var d = s.data();
+            role = d.role === 'admin' ? 'admin' : 'student';
+          } else {
+            var anyUser = await withTimeout(DB.collection('users').limit(1).get(), 3500);
+            role = anyUser.empty ? 'admin' : role;
+            await DB.doc('users/' + u).set({ username: u, role: role, updatedAt: Date.now() });
+          }
+        } catch (dbErr) {
+          console.warn('Firestore profile sync delayed, using cached role:', dbErr);
+        }
       }
+
+      account = { username: u, role: role };
       store.set('ew_login', u);
+      store.set('ew_role_' + u, role);
       await enterGame();
     } catch (err) {
       console.error('Sign in error:', err);
       var msg = 'Wrong username or password.';
       if (err && err.code === 'auth/too-many-requests') msg = 'Too many failed attempts. Please try again later.';
       else if (err && err.code === 'auth/network-request-failed') msg = 'Network error. Check your internet connection.';
+      else if (err && err.code === 'auth/unauthorized-domain') msg = 'Domain not authorized in Firebase Console (Authentication > Settings > Authorized domains).';
+      else if (err && err.code === 'auth/operation-not-supported-in-this-environment') msg = 'Open via https:// (GitHub Pages) instead of a local file:// path.';
       else if (err && err.message && err.message.indexOf('Username must') === 0) msg = err.message;
+      else if (err && err.code && err.code !== 'auth/invalid-credential' && err.code !== 'auth/wrong-password' && err.code !== 'auth/user-not-found') {
+        msg = err.message || msg;
+      }
       showError('liErr', msg);
     }
     $('liGo').disabled = false;
@@ -1471,6 +1488,7 @@
       noUsers = false;
       account = { username: u, role: 'admin' };
       store.set('ew_login', u);
+      store.set('ew_role_' + u, 'admin');
       await enterGame();
     } catch (err) {
       console.error('Setup error:', err);
@@ -1796,7 +1814,7 @@
       var settled = false;
       var timer = setTimeout(function () {
         if (!settled) { settled = true; resolve(AUTH.currentUser || null); }
-      }, 2500);
+      }, 6000);
       var unsub = AUTH.onAuthStateChanged(function (user) {
         if (!settled) {
           settled = true;
@@ -1809,17 +1827,7 @@
   }
 
   async function boot() {
-    if (DB) {
-      try {
-        await Promise.all([loadCustomWords(), loadSchedule()]);
-        var snap = await withTimeout(DB.collection('users').limit(1).get(), 3000);
-        noUsers = snap.empty;
-      } catch (e) {
-        console.warn("Firestore initial check skipped or timed out:", e);
-      }
-    }
-
-    if (!DB || !AUTH) {
+    if (!AUTH) {
       account = null;
       await enterGame();
       return;
@@ -1834,21 +1842,33 @@
       return;
     }
 
-    /* Check active Firebase Auth session */
+    /* Check active Firebase Auth session first (persists across index.html re-uploads) */
     var user = await getAuthState();
     if (user && user.email) {
       var username = user.email.split('@')[0];
-      try {
-        var s = await withTimeout(DB.doc('users/' + username).get(), 3000);
-        if (s.exists) {
-          account = { username: username, role: s.data().role === 'admin' ? 'admin' : 'student' };
-          await enterGame();
-          return;
-        }
-      } catch (e) {}
-      account = { username: username, role: 'student' };
+      var role = store.get('ew_role_' + username, username === 'teacher' ? 'admin' : 'student');
+      if (DB) {
+        try {
+          var s = await withTimeout(DB.doc('users/' + username).get(), 4000);
+          if (s.exists) {
+            role = s.data().role === 'admin' ? 'admin' : 'student';
+            store.set('ew_role_' + username, role);
+          }
+        } catch (e) {}
+      }
+      account = { username: username, role: role };
+      store.set('ew_login', username);
       await enterGame();
       return;
+    }
+
+    if (DB) {
+      try {
+        var snap = await withTimeout(DB.collection('users').limit(1).get(), 3000);
+        noUsers = snap.empty;
+      } catch (e) {
+        noUsers = false;
+      }
     }
 
     showLogin();
